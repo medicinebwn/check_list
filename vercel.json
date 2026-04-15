@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "name": "checklist-app",
+  "outputDirectory": "public",
+  "builds": [
+    { "src": "public/index.html", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/public/index.html" }
+  ]
+}
