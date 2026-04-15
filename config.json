@@ -1,0 +1,18 @@
+{
+  "supabase_url": "https://xvwfkpojafajoeskadhq.supabase.co",
+  "supabase_anon_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2d2ZrcG9qYWZham9lc2thZGhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMzM1MTAsImV4cCI6MjA5MTgwOTUxMH0.-3GXm41lF-qov8IjnJWvy6NEYwjcxIfJM4owehPuUmA",
+  "app": {
+    "APP_NAME": "CheckList",
+    "ADMIN_USER": "admin",
+    "ADMIN_PASS": "Admin@1234",
+    "USER_PASS": "User@1234",
+    "SCORE_ON_TIME": 1,
+    "SCORE_LATE": 0,
+    "ROLES": {
+      "ADMIN": "Full Access: Management, Doers, Tasks, Schedule Generation, Scoring",
+      "SUPER_ADMIN": "Supervisor Access: My Tasks, Done List, Scoring",
+      "USER": "Operator Access: My Tasks, Done List (Read-only)"
+    },
+    "EMAIL_FROM": "mis@yajurfibres.com"
+  }
+}
