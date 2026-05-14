@@ -815,7 +815,7 @@ body {
         </div>
         <div class="text-center mb-4">
           <button class="btn-generate" onclick="generateMaster()"><i class="bi bi-play-circle-fill"></i>START — Generate Master Schedule</button>
-          <div style="font-size:.76rem;color:var(--ink-muted);margin-top:8px;">Generates a 2-year schedule based on all tasks above</div>
+          <div style="font-size:.76rem;color:var(--ink-muted);margin-top:8px;">Only selected tasks will be scheduled. Previous "Done" marks are safe.</div>
         </div>
         <div class="card-wrap">
           <div class="card-head">
@@ -824,7 +824,7 @@ body {
           </div>
           <div class="tbl-scroll">
             <table class="data-table" id="taskTable">
-              <thead><tr><th>ID</th><th>Task Name</th><th>Doer</th><th>Department</th><th>Frequency</th><th>Start Date</th><th>Actions</th></tr></thead>
+              <thead><tr><th><input type="checkbox" id="selectAllTasks" onclick="toggleAllTasks(this)"></th><th>ID</th><th>Task Name</th><th>Doer</th><th>Department</th><th>Frequency</th><th>Start Date</th><th>Actions</th></tr></thead>
               <tbody id="taskTbody"></tbody>
             </table>
           </div>
@@ -995,7 +995,7 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
-//  CHECKLIST — Core Logic Updated for SQL Schema
+//  CHECKLIST — Core Logic Updated for Selective Scheduling
 // ═══════════════════════════════════════════════════════════════
 
 const SUPABASE_URL  = "https://xvwfkpojafajoeskadhq.supabase.co";
@@ -1248,13 +1248,12 @@ function buildDeptChart(labels, data) {
 }
 
 // ── DOERS ─────────────────────────────────────────────────────
-let DOER_PK = 'name'; // fallback; auto-detected after first load
+let DOER_PK = 'name'; 
 
 function detectDoerPK(row) {
   if (!row) return 'name';
   if (row.id   !== undefined) return 'id';
   if (row.uuid !== undefined) return 'uuid';
-  // Supabase always returns the PK first — grab the first numeric/uuid-like key
   for (const k of Object.keys(row)) {
     if (k === 'name' || k === 'department' || k === 'email' || k === 'phone' || k === 'whatsapp' || k === 'user_type') continue;
     return k;
@@ -1341,6 +1340,7 @@ async function loadTasks() {
   TASKS_CACHE = data || [];
   document.getElementById('taskTbody').innerHTML = TASKS_CACHE.map(r => `
     <tr>
+      <td><input type="checkbox" class="task-select" value="${r.id}"></td>
       <td style="font-family:'Space Mono',monospace;font-size:.75rem;color:var(--ink-muted);">${r.id}</td>
       <td><strong>${r.task_name || ''}</strong></td>
       <td>${r.doer_name || ''}</td>
@@ -1352,6 +1352,10 @@ async function loadTasks() {
         <button class="btn-icon danger ms-1" onclick="deleteTask(${r.id})"><i class="bi bi-trash"></i></button>
       </td>
     </tr>`).join('');
+}
+
+function toggleAllTasks(source) {
+  document.querySelectorAll('.task-select').forEach(cb => cb.checked = source.checked);
 }
 
 async function openTaskModal(id) {
@@ -1418,15 +1422,26 @@ async function deleteTask(id) {
   loadTasks();
 }
 
-// ── GENERATE MASTER ───────────────────────────────────────────
+// ── GENERATE MASTER (FIXED LOGIC) ───────────────────────────────────────────
 async function generateMaster() {
-  if (!confirm('This will regenerate the entire Master Schedule (2 years). Continue?')) return;
+  const selectedCbs = document.querySelectorAll('.task-select:checked');
+  const selectedIds = Array.from(selectedCbs).map(cb => parseInt(cb.value));
+
+  if (selectedIds.length === 0) {
+    toast('Please select at least one task to schedule', 'error');
+    return;
+  }
+
+  if (!confirm(`Generate schedule for ${selectedIds.length} selected tasks? This will replace existing schedules for these specific tasks only.`)) return;
+  
   toast('Generating schedule…', 'info');
 
-  const { data: tasks } = await sb.from('tasks').select('*');
+  const { data: tasks } = await sb.from('tasks').select('*').in('id', selectedIds);
   if (!tasks || !tasks.length) { toast('No tasks found.', 'error'); return; }
 
-  await sb.from('master_schedule').delete().neq('id', 0);
+  // 🔥 THE FIX: Only delete the schedules for the SELECTED tasks
+  const { error: delErr } = await sb.from('master_schedule').delete().in('task_ref_id', selectedIds);
+  if (delErr) { toast('Error clearing old schedule: ' + delErr.message, 'error'); return; }
 
   const FREQ_INTERVALS = { D:1, W:7, '2W':15, M:30, '2M':60, '3M':90, '6M':180, Y:365 };
   const rows = [];
@@ -1434,7 +1449,7 @@ async function generateMaster() {
     const start = new Date(t.start_date);
     const freq  = (t.frequency || '2W').toUpperCase();
     const interval = FREQ_INTERVALS[freq] || 30;
-    const end = new Date(start.getTime() + 730 * 86400000);
+    const end = new Date(start.getTime() + 730 * 86400000); // 2 Years
     let cur = new Date(start);
     while (cur <= end) {
       rows.push({
@@ -1454,7 +1469,7 @@ async function generateMaster() {
     const { error } = await sb.from('master_schedule').insert(rows.slice(i, i + 500));
     if (error) { toast('Error: ' + error.message, 'error'); return; }
   }
-  toast(`✓ Generated ${rows.length} rows!`, 'success');
+  toast(`✓ Generated ${rows.length} rows for selected tasks!`, 'success');
   loadMaster();
 }
 
@@ -1522,9 +1537,7 @@ async function loadScoring() {
   const scoring = sc || [];
   const lb = buildLeaderboard(scoring);
 
-  // ── RENDER PERFORMANCE RANK CARDS ──────────────────────────
   renderPerfRankCards(lb);
-
   renderLeaderboard(lb, 'scoringLeaderboard');
 
   const ctx = document.getElementById('chartScore').getContext('2d');
@@ -1564,7 +1577,6 @@ function renderPerfRankCards(lb) {
   if (!el) return;
   if (!lb.length) { el.innerHTML = ''; return; }
 
-  // Count people in each tier
   const tiers = { excellent: [], good: [], average: [], improve: [] };
   lb.forEach(p => { const r = getRankMeta(p.score); tiers[r.cls].push(p); });
 
@@ -1661,8 +1673,6 @@ async function confirmSubmit() {
   if (!currentSubmitTask) return;
   const t = currentSubmitTask;
 
-  // ✅ FIX: Compare dates as YYYY-MM-DD strings to avoid timezone/time issues
-  // This ensures same-day completion is always "Done On Time"
   const nowStr     = new Date().toISOString().split('T')[0];
   const plannedStr = new Date(t.planned_date).toISOString().split('T')[0];
 
