@@ -131,13 +131,6 @@ body {
   padding: 44px 40px;
   display: flex; flex-direction: column; justify-content: center;
 }
-.lf-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.6rem;
-  color: var(--ink);
-  margin-bottom: 4px;
-}
-.lf-sub { color: var(--ink-muted); font-size: .82rem; margin-bottom: 28px; }
 .role-pills {
   display: flex; gap: 6px;
   background: var(--paper);
@@ -203,14 +196,6 @@ body {
   margin-top: 4px;
 }
 .btn-login:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(26,86,219,.3); }
-.login-hint {
-  font-size: .74rem;
-  color: var(--ink-muted);
-  text-align: center;
-  margin-top: 14px;
-  line-height: 1.5;
-}
-.login-hint strong { color: var(--blue); font-weight: 600; }
 .login-error {
   color: var(--red);
   font-size: .8rem;
@@ -276,7 +261,7 @@ body {
 }
 .btn-nav-logout:hover { background: var(--red-pale); border-color: var(--red); color: var(--red); }
 
-/* ── NEW TOP MENU STYLES ── */
+/* ── TOP MENU ── */
 .navbar-menu-row {
   display: flex;
   background: var(--surface);
@@ -307,11 +292,7 @@ body {
 }
 
 /* ── LAYOUT ─────────────────────────────────────────────── */
-.app-layout {
-  display: block; 
-}
-
-/* ── MAIN ─────────────────────────────────────────────────── */
+.app-layout { display: block; }
 .main-content { padding: 28px 28px 40px; overflow-x: hidden; min-width: 0; }
 .page { display: none; }
 .page.active { display: block; animation: pageFade .25s ease; }
@@ -545,7 +526,7 @@ body {
 .lb-score-val { font-size: 1.4rem; font-weight: 700; }
 .lb-score-meta { font-size: .67rem; color: var(--ink-muted); }
 
-/* ── MY TASKS (USER) ─────────────────────────────────────── */
+/* ── MY TASKS ─────────────────────────────────────────────── */
 .task-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -557,7 +538,6 @@ body {
 }
 .task-card:hover { box-shadow: var(--shadow-sm); }
 .task-card.overdue { border-left: 4px solid var(--red); }
-.task-card.due-soon { border-left: 4px solid var(--amber); }
 .task-card.ok { border-left: 4px solid var(--green); }
 .task-head {
   padding: 14px 18px;
@@ -568,11 +548,6 @@ body {
 .task-name { font-weight: 700; color: var(--ink); font-size: .95rem; }
 .task-meta { font-size: .78rem; color: var(--ink-muted); margin-top: 5px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .task-meta-sep { color: var(--border-mid); }
-.task-date-chip {
-  font-family: 'Space Mono', monospace;
-  font-size: .72rem; font-weight: 700;
-  padding: 2px 8px; border-radius: 4px;
-}
 .task-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
 
 /* ── EMPTY STATE ─────────────────────────────────────────── */
@@ -582,7 +557,6 @@ body {
 }
 .empty-state i { font-size: 3rem; color: var(--border-mid); display: block; margin-bottom: 12px; }
 .empty-state strong { color: var(--ink-soft); font-size: 1rem; display: block; }
-.empty-state span { font-size: .83rem; }
 
 /* ── MODAL ───────────────────────────────────────────────── */
 .modal-content { border: none; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
@@ -604,12 +578,6 @@ body {
 .form-control:focus, .form-select:focus {
   border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,219,.10); outline: none;
 }
-.check-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 9px 0; border-bottom: 1px solid var(--border);
-}
-.check-row:last-of-type { border-bottom: none; }
-.check-row label { font-size: .83rem; color: var(--ink-soft); flex: 1; }
 
 /* ── TOAST ───────────────────────────────────────────────── */
 .toast-wrap { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
@@ -733,6 +701,7 @@ body {
         <div class="nav-menu-item" id="menu-doers" onclick="showPage('doers')"><i class="bi bi-people-fill"></i>Doers</div>
         <div class="nav-menu-item" id="menu-tasks" onclick="showPage('tasks')"><i class="bi bi-list-task"></i>Tasks</div>
         <div class="nav-menu-item" id="menu-master" onclick="showPage('master')"><i class="bi bi-table"></i>Master Schedule</div>
+        <div class="nav-menu-item" id="menu-archive" onclick="showPage('archive')"><i class="bi bi-archive-fill"></i>Archive</div>
         <div class="nav-menu-item" id="menu-donelist" onclick="showPage('donelist')"><i class="bi bi-check2-all"></i>Done List</div>
         <div class="nav-menu-item" id="menu-scoring" onclick="showPage('scoring')"><i class="bi bi-trophy-fill"></i>Scoring</div>
       </div>
@@ -831,21 +800,41 @@ body {
         </div>
       </div>
 
-      <!-- ── MASTER SCHEDULE ────────────────────────────── -->
+      <!-- ── MASTER SCHEDULE (PENDING ONLY) ────────────────── -->
       <div class="page" id="page-master">
         <div class="pg-header d-flex align-items-start justify-content-between flex-wrap gap-3">
-          <div><div class="pg-title">Master Schedule</div><div class="pg-sub">Auto-generated 2-year maintenance calendar</div></div>
-          <button class="btn-icon" onclick="exportCsv('master_schedule')"><i class="bi bi-download"></i>CSV</button>
+          <div><div class="pg-title">Master Schedule</div><div class="pg-sub">Pending scheduled maintenance tasks</div></div>
+          <button class="btn-icon" onclick="exportFilteredCsv('pending')"><i class="bi bi-download"></i>CSV</button>
         </div>
         <div class="card-wrap">
           <div class="card-head">
-            <span class="card-head-title"><i class="bi bi-calendar2-week"></i>All Scheduled Tasks</span>
+            <span class="card-head-title"><i class="bi bi-calendar2-week"></i>Pending Tasks</span>
             <input type="text" class="search-input" placeholder="Search…" oninput="filterTable('masterTable',this.value)"/>
           </div>
           <div class="tbl-scroll">
             <table class="data-table" id="masterTable">
               <thead><tr><th>Name</th><th>Department</th><th>Task ID</th><th>Freq</th><th>Task</th><th>Planned</th><th>Actual</th><th>Status</th><th>Notify</th></tr></thead>
               <tbody id="masterTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ARCHIVE (ALL / COMPLETED SCHEDULE RECORDS) ───── -->
+      <div class="page" id="page-archive">
+        <div class="pg-header d-flex align-items-start justify-content-between flex-wrap gap-3">
+          <div><div class="pg-title">Archive</div><div class="pg-sub">Historical record of all scheduled tasks &amp; executions</div></div>
+          <button class="btn-icon" onclick="exportFilteredCsv('archive')"><i class="bi bi-download"></i>CSV</button>
+        </div>
+        <div class="card-wrap">
+          <div class="card-head">
+            <span class="card-head-title"><i class="bi bi-archive"></i>Archived Schedule Records</span>
+            <input type="text" class="search-input" placeholder="Search…" oninput="filterTable('archiveTable',this.value)"/>
+          </div>
+          <div class="tbl-scroll">
+            <table class="data-table" id="archiveTable">
+              <thead><tr><th>Name</th><th>Department</th><th>Task ID</th><th>Freq</th><th>Task</th><th>Planned</th><th>Actual</th><th>Status</th><th>Remarks</th></tr></thead>
+              <tbody id="archiveTbody"></tbody>
             </table>
           </div>
         </div>
@@ -878,7 +867,6 @@ body {
           <button class="btn-icon" onclick="exportCsv('scoring')"><i class="bi bi-download"></i>CSV</button>
         </div>
 
-        <!-- ── PERFORMANCE RANK CARDS ── -->
         <div id="perfRankCards" style="margin-bottom:18px;"></div>
 
         <div class="row g-3 mb-3">
@@ -995,7 +983,7 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
-//  CHECKLIST — Core Logic Updated for Selective Scheduling
+//  CHECKLIST — Core Logic
 // ═══════════════════════════════════════════════════════════════
 
 const SUPABASE_URL  = "https://xvwfkpojafajoeskadhq.supabase.co";
@@ -1135,6 +1123,7 @@ function showPage(page) {
     doers:     loadDoers,
     tasks:     loadTasks,
     master:    loadMaster,
+    archive:   loadArchive,
     donelist:  loadDoneList,
     scoring:   loadScoring,
     myTasks:   loadMyTasks,
@@ -1422,7 +1411,7 @@ async function deleteTask(id) {
   loadTasks();
 }
 
-// ── GENERATE MASTER (FIXED LOGIC) ───────────────────────────────────────────
+// ── GENERATE MASTER ───────────────────────────────────────────
 async function generateMaster() {
   const selectedCbs = document.querySelectorAll('.task-select:checked');
   const selectedIds = Array.from(selectedCbs).map(cb => parseInt(cb.value));
@@ -1439,7 +1428,6 @@ async function generateMaster() {
   const { data: tasks } = await sb.from('tasks').select('*').in('id', selectedIds);
   if (!tasks || !tasks.length) { toast('No tasks found.', 'error'); return; }
 
-  // 🔥 THE FIX: Only delete the schedules for the SELECTED tasks
   const { error: delErr } = await sb.from('master_schedule').delete().in('task_ref_id', selectedIds);
   if (delErr) { toast('Error clearing old schedule: ' + delErr.message, 'error'); return; }
 
@@ -1488,16 +1476,23 @@ async function sendWhatsAppNotify(doerName, taskName, plannedDate) {
   toast('WhatsApp opened', 'success');
 }
 
-// ── MASTER DISPLAY ────────────────────────────────────────────
+// ── MASTER DISPLAY (PENDING ONLY) ──────────────────────────────
 async function loadMaster() {
   if (!sb) return;
-  const { data } = await sb.from('master_schedule').select('*').order('planned_date', { ascending: true });
-  document.getElementById('masterTbody').innerHTML = (data || []).map(r => {
-    const st = (r.status || '').trim();
-    const badge = st === 'Done On Time' ? `<span class="badge badge-ontime">${st}</span>`
-                : st === 'Done Late'    ? `<span class="badge badge-late">${st}</span>`
-                : `<span class="badge badge-pending">Pending</span>`;
-    const waBtn = !st ? `<button class="btn-whatsapp" onclick="sendWhatsAppNotify('${r.doer_name}','${r.task_name}','${r.planned_date}')"><i class="bi bi-whatsapp"></i></button>` : '';
+  const { data } = await sb.from('master_schedule')
+    .select('*')
+    .is('status', null)
+    .order('planned_date', { ascending: true });
+
+  const rows = data || [];
+  if (!rows.length) {
+    document.getElementById('masterTbody').innerHTML = `<tr><td colspan="9" class="text-center text-muted p-4">No pending tasks found.</td></tr>`;
+    return;
+  }
+
+  document.getElementById('masterTbody').innerHTML = rows.map(r => {
+    const badge = `<span class="badge badge-pending">Pending</span>`;
+    const waBtn = `<button class="btn-whatsapp" onclick="sendWhatsAppNotify('${r.doer_name}','${r.task_name}','${r.planned_date}')"><i class="bi bi-whatsapp"></i></button>`;
     return `<tr>
       <td>${r.doer_name || ''}</td><td>${r.department || ''}</td>
       <td style="font-family:'Space Mono',monospace;font-size:.75rem;">${r.task_ref_id || ''}</td>
@@ -1507,6 +1502,38 @@ async function loadMaster() {
       <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${r.actual_date ? fmtDate(r.actual_date) : '—'}</td>
       <td>${badge}</td>
       <td>${waBtn}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── ARCHIVE (COMPLETED / ALL HISTORICAL RECORDS) ───────────────
+async function loadArchive() {
+  if (!sb) return;
+  const { data } = await sb.from('master_schedule')
+    .select('*')
+    .not('status', 'is', null)
+    .order('planned_date', { ascending: false });
+
+  const rows = data || [];
+  if (!rows.length) {
+    document.getElementById('archiveTbody').innerHTML = `<tr><td colspan="9" class="text-center text-muted p-4">No archived/completed records yet.</td></tr>`;
+    return;
+  }
+
+  document.getElementById('archiveTbody').innerHTML = rows.map(r => {
+    const st = (r.status || '').trim();
+    const badge = st === 'Done On Time' ? `<span class="badge badge-ontime">${st}</span>`
+                : st === 'Done Late'    ? `<span class="badge badge-late">${st}</span>`
+                : `<span class="badge badge-pending">${st || 'Completed'}</span>`;
+    return `<tr>
+      <td><strong>${r.doer_name || ''}</strong></td><td>${r.department || ''}</td>
+      <td style="font-family:'Space Mono',monospace;font-size:.75rem;">${r.task_ref_id || ''}</td>
+      <td><span class="badge badge-freq">${r.frequency || ''}</span></td>
+      <td>${r.task_name || ''}</td>
+      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${fmtDate(r.planned_date)}</td>
+      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${r.actual_date ? fmtDate(r.actual_date) : '—'}</td>
+      <td>${badge}</td>
+      <td style="font-size:.78rem;color:var(--ink-muted);">${r.remarks || '—'}</td>
     </tr>`;
   }).join('');
 }
@@ -1678,13 +1705,13 @@ async function confirmSubmit() {
 
   const onTime = nowStr <= plannedStr;
   const status = onTime ? 'Done On Time' : 'Done Late';
-  const getV = id => document.getElementById(id).value;
+  const remarksVal = document.getElementById('chk_remarks').value.trim();
 
   const actualDateTime = new Date();
   const updateData = {
     actual_date: actualDateTime.toISOString(),
     status: status,
-    remarks: getV('chk_remarks')
+    remarks: remarksVal
   };
 
   await sb.from('master_schedule').update(updateData).eq('id', t.id);
@@ -1697,7 +1724,7 @@ async function confirmSubmit() {
     actual_date: actualDateTime.toISOString(),
     status: status,
     submitted_by: SESSION.name,
-    remarks: getV('chk_remarks')
+    remarks: remarksVal
   });
 
   await sb.from('scoring').insert({
@@ -1724,6 +1751,23 @@ async function exportCsv(table) {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
   a.download = `${table}.csv`;
+  a.click();
+}
+
+async function exportFilteredCsv(type) {
+  let query = sb.from('master_schedule').select('*');
+  if (type === 'pending') {
+    query = query.is('status', null);
+  } else if (type === 'archive') {
+    query = query.not('status', 'is', null);
+  }
+  const { data } = await query;
+  if (!data || !data.length) { toast('No records to export', 'info'); return; }
+  const keys = Object.keys(data[0]);
+  const csv = [keys.join(','), ...data.map(r => keys.map(k => `"${r[k] ?? ''}"`).join(','))].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = `${type}_master_schedule.csv`;
   a.click();
 }
 
