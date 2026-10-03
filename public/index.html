@@ -978,6 +978,25 @@ body {
   </div></div>
 </div>
 
+<!-- ── SHIFT DATE MODAL (NEW) ───────────────────────────────── -->
+<div class="modal fade" id="shiftModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title"><i class="bi bi-calendar-event me-2"></i>Shift Schedule Date</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body p-4">
+      <input type="hidden" id="shift_task_id"/>
+      <div class="mb-3">
+        <label class="form-label">New Planned Date *</label>
+        <input type="date" class="form-control" id="shift_new_date"/>
+      </div>
+      <div class="alert alert-info small">Moving this task will reset its status to "Pending" for the selected date.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      <button class="btn-primary" onclick="saveShift()"><i class="bi bi-arrow-repeat"></i>Update Schedule</button>
+    </div>
+  </div></div>
+</div>
+
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -1493,6 +1512,15 @@ async function loadMaster() {
   document.getElementById('masterTbody').innerHTML = rows.map(r => {
     const badge = `<span class="badge badge-pending">Pending</span>`;
     const waBtn = `<button class="btn-whatsapp" onclick="sendWhatsAppNotify('${r.doer_name}','${r.task_name}','${r.planned_date}')"><i class="bi bi-whatsapp"></i></button>`;
+    
+    // NEW: Added action buttons for Admin
+    const actionButtons = `
+      <div class="d-flex gap-1">
+        <button class="btn-icon btn-sm" onclick="markDone('${r.id}')" title="Mark Done"><i class="bi bi-check-circle"></i></button>
+        <button class="btn-icon btn-sm" onclick="openShiftModal('${r.id}')" title="Shift Date"><i class="bi bi-calendar-event"></i></button>
+      </div>
+    `;
+
     return `<tr>
       <td>${r.doer_name || ''}</td><td>${r.department || ''}</td>
       <td style="font-family:'Space Mono',monospace;font-size:.75rem;">${r.task_ref_id || ''}</td>
@@ -1500,7 +1528,12 @@ async function loadMaster() {
       <td>${r.task_name || ''}</td>
       <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${fmtDate(r.planned_date)}</td>
       <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${r.actual_date ? fmtDate(r.actual_date) : '—'}</td>
-      <td>${badge}</td>
+      <td>
+        <div class="d-flex align-items-center gap-2">
+            ${badge}
+            ${actionButtons}
+        </div>
+      </td>
       <td>${waBtn}</td>
     </tr>`;
   }).join('');
@@ -1553,7 +1586,7 @@ async function loadDoneList() {
       <td>${badge}</td>
       <td>${r.submitted_by || ''}</td>
       <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${fmtDate(r.submitted_on)}</td>
-    </tr>`;
+    </tr>`);
   }).join('');
 }
 
@@ -1740,6 +1773,103 @@ async function confirmSubmit() {
   bootstrap.Modal.getInstance(document.getElementById('submitModal')).hide();
   toast('Task completed!', 'success');
   loadMyTasks();
+}
+
+// ── MASTER SCHEDULE ACTIONS (UPDATED) ──────────────────────────
+
+/**
+ * NEW: Marks task as completed in master_schedule, done_list, and scoring.
+ * This is the "Done" button in the Admin view.
+ */
+async function markDone(taskId) {
+  if (!confirm('Are you sure you want to mark this task as Done?')) return;
+  
+  const { data: task, error: fetchErr } = await sb.from('master_schedule').select('*').eq('id', taskId).single();
+  if (fetchErr || !task) { toast('Error fetching task details', 'error'); return; }
+
+  const now = new Date();
+  const nowStr = now.toISOString().split('T')[0];
+  const plannedStr = new Date(task.planned_date).toISOString().split('T')[0];
+  
+  const onTime = nowStr <= plannedStr;
+  const status = onTime ? 'Done On Time' : 'Done Late';
+  const remarksVal = "Completed via Master Schedule";
+
+  toast('Completing task...', 'info');
+
+  try {
+    // 1. Update master_schedule
+    const { error: upErr } = await sb.from('master_schedule').update({
+      actual_date: now.toISOString(),
+      status: status,
+      remarks: remarksVal
+    }).eq('id', taskId);
+    if (upErr) throw upErr;
+
+    // 2. Insert into done_list
+    const { error: doneErr } = await sb.from('done_list').insert({
+      doer_name: task.doer_name,
+      department: task.department,
+      task_name: task.task_name,
+      planned_date: task.planned_date,
+      actual_date: now.toISOString(),
+      status: status,
+      submitted_by: SESSION.name,
+      remarks: remarksVal
+    });
+    if (doneErr) throw doneErr;
+
+    // 3. Insert into scoring
+    const { error: scoreErr } = await sb.from('scoring').insert({
+      doer_name: task.doer_name,
+      department: task.department,
+      task_name: task.task_name,
+      on_time: onTime,
+      score: onTime ? 0 : -10,
+      planned_date: task.planned_date,
+      actual_date: now.toISOString()
+    });
+    if (scoreErr) throw scoreErr;
+
+    toast('Task marked as Done ✓', 'success');
+    loadMaster();
+  } catch (err) {
+    toast('Error: ' + err.message, 'error');
+  }
+}
+
+/**
+ * NEW: Opens the modal to select a new date for a pending task.
+ */
+function openShiftModal(taskId) {
+  document.getElementById('shift_task_id').value = taskId;
+  new bootstrap.Modal(document.getElementById('shiftModal')).show();
+}
+
+/**
+ * NEW: Updates the task with the new date and resets status to Pending.
+ */
+async function saveShift() {
+  const taskId = document.getElementById('shift_task_id').value;
+  const newDate = document.getElementById('shift_new_date').value;
+
+  if (!newDate) { toast('Please select a date', 'error'); return; }
+
+  toast('Rescheduling task...', 'info');
+
+  const { error } = await sb.from('master_schedule').update({
+    planned_date: newDate,
+    status: null // Resets to Pending
+  }).eq('id', taskId);
+
+  bootstrap.Modal.getInstance(document.getElementById('shiftModal')).hide();
+
+  if (error) {
+    toast('Update failed: ' + error.message, 'error');
+  } else {
+    toast('Task rescheduled to ' + fmtDate(newDate), 'success');
+    loadMaster();
+  }
 }
 
 // ── UTILS ─────────────────────────────────────────────────────
