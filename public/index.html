@@ -978,7 +978,7 @@ body {
   </div></div>
 </div>
 
-<!-- ── SHIFT DATE MODAL (NEW) ───────────────────────────────── -->
+<!-- ── SHIFT DATE MODAL ────────────────────────────────────── -->
 <div class="modal fade" id="shiftModal" tabindex="-1">
   <div class="modal-dialog"><div class="modal-content">
     <div class="modal-header"><h5 class="modal-title"><i class="bi bi-calendar-event me-2"></i>Shift Schedule Date</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
@@ -988,7 +988,7 @@ body {
         <label class="form-label">New Planned Date *</label>
         <input type="date" class="form-control" id="shift_new_date"/>
       </div>
-      <div class="alert alert-info small">Moving this task will reset its status to "Pending" for the selected date.</div>
+      <div class="alert alert-info small mb-0">Moving this task will reschedule it to the selected date. Its status will remain Pending.</div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -1044,8 +1044,10 @@ function setStatus(msg) { const el = document.getElementById('loadStatus'); if (
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function fadeOutLoader() {
   const el = document.getElementById('loadingScreen');
-  el.style.opacity = '0';
-  setTimeout(() => el.style.display = 'none', 500);
+  if (el) {
+    el.style.opacity = '0';
+    setTimeout(() => el.style.display = 'none', 500);
+  }
 }
 
 // ── LOGIN ─────────────────────────────────────────────────────
@@ -1515,8 +1517,8 @@ async function loadMaster() {
     
     const actionButtons = `
       <div class="d-flex gap-1">
-        <button class="btn-icon btn-sm" onclick="markDone('${r.id}')" title="Mark Done"><i class="bi bi-check-circle"></i></button>
-        <button class="btn-icon btn-sm" onclick="openShiftModal('${r.id}')" title="Shift Date"><i class="bi bi-calendar-event"></i></button>
+        <button class="btn-icon btn-sm" onclick="markDone('${r.id}')" title="Mark Done"><i class="bi bi-check-circle text-success"></i></button>
+        <button class="btn-icon btn-sm" onclick="openShiftModal('${r.id}')" title="Shift Date"><i class="bi bi-calendar-event text-primary"></i></button>
       </div>
     `;
 
@@ -1585,7 +1587,7 @@ async function loadDoneList() {
       <td>${badge}</td>
       <td>${r.submitted_by || ''}</td>
       <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${fmtDate(r.submitted_on)}</td>
-    </tr>`);
+    </tr>`;
   }).join('');
 }
 
@@ -1775,7 +1777,6 @@ async function confirmSubmit() {
 }
 
 // ── MASTER SCHEDULE ACTIONS ───────────────────────────────────
-
 async function markDone(taskId) {
   if (!confirm('Are you sure you want to mark this task as Done?')) return;
   
@@ -1807,7 +1808,7 @@ async function markDone(taskId) {
       planned_date: task.planned_date,
       actual_date: now.toISOString(),
       status: status,
-      submitted_by: SESSION.name,
+      submitted_by: SESSION.name || 'Admin',
       remarks: remarksVal
     });
     if (doneErr) throw doneErr;
@@ -1832,6 +1833,7 @@ async function markDone(taskId) {
 
 function openShiftModal(taskId) {
   document.getElementById('shift_task_id').value = taskId;
+  document.getElementById('shift_new_date').value = '';
   new bootstrap.Modal(document.getElementById('shiftModal')).show();
 }
 
@@ -1844,7 +1846,7 @@ async function saveShift() {
   toast('Rescheduling task...', 'info');
 
   const { error } = await sb.from('master_schedule').update({
-    planned_date: newDate,
+    planned_date: new Date(newDate + 'T00:00:00').toISOString(),
     status: null 
   }).eq('id', taskId);
 
