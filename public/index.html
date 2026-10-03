@@ -12,56 +12,65 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --ink:        #0A0E1A;
-  --ink-soft:   #3D4560;
-  --ink-muted:  #7A85A3;
-  --paper:      #F7F8FC;
+  --ink:        #0F172A;
+  --ink-soft:   #334155;
+  --ink-muted:  #64748B;
+  --paper:      #F8FAFC;
   --surface:    #FFFFFF;
-  --border:     #E4E8F5;
-  --border-mid: #C8D0E8;
-  --blue:       #1A56DB;
-  --blue-dark:  #0F3A9E;
-  --blue-light: #3B82F6;
-  --blue-pale:  #EEF3FF;
-  --teal:       #0891B2;
-  --teal-pale:  #E0F5FA;
+  --border:     #E2E8F0;
+  --border-mid: #CBD5E1;
+
+  /* Theme: Vibrant Royal Blue & Deep Pink */
+  --blue:       #2563EB;
+  --blue-dark:  #1D4ED8;
+  --blue-light: #60A5FA;
+  --blue-pale:  #EFF6FF;
+
+  --pink:       #EC4899;
+  --pink-dark:  #BE185D;
+  --pink-light: #F472B6;
+  --pink-pale:  #FDF2F8;
+  --pink-border:#FBCFE8;
+
+  --teal:       #0D9488;
+  --teal-pale:  #F0FDFA;
   --gold:       #D97706;
   --gold-pale:  #FEF3C7;
-  --green:      #059669;
-  --green-pale: #D1FAE5;
-  --red:        #DC2626;
-  --red-pale:   #FEE2E2;
-  --amber:      #D97706;
-  --amber-pale: #FEF3C7;
+  --green:      #10B981;
+  --green-pale: #ECFDF5;
+  --red:        #EF4444;
+  --red-pale:   #FEF2F2;
+  --amber:      #F59E0B;
+  --amber-pale: #FFFBEB;
+
   --radius:     12px;
-  --radius-sm:  7px;
+  --radius-sm:  8px;
   --radius-lg:  18px;
-  --shadow-xs:  0 1px 3px rgba(10,14,26,.06), 0 1px 2px rgba(10,14,26,.04);
-  --shadow-sm:  0 2px 8px rgba(10,14,26,.08), 0 1px 3px rgba(10,14,26,.05);
-  --shadow-md:  0 4px 16px rgba(10,14,26,.10), 0 2px 6px rgba(10,14,26,.06);
-  --shadow-lg:  0 8px 32px rgba(10,14,26,.13), 0 4px 10px rgba(10,14,26,.07);
-  --nav-h:      auto; 
+  --shadow-xs:  0 1px 3px rgba(15,23,42,.06);
+  --shadow-sm:  0 3px 10px rgba(37,99,235,.08);
+  --shadow-md:  0 6px 20px rgba(15,23,42,.08);
+  --shadow-lg:  0 12px 36px rgba(236,72,153,.15);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: 'DM Sans', sans-serif;
-  background: var(--paper);
+  background: linear-gradient(135deg, #F8FAFC 0%, #FDF2F8 50%, #EFF6FF 100%);
   color: var(--ink);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
-::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: var(--blue-light); }
+::-webkit-scrollbar-thumb { background: var(--pink-light); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--pink-dark); }
 
 /* ── LOADING ───────────────────────────────────────────── */
 #loadingScreen {
   position: fixed; inset: 0;
-  background: var(--paper);
+  background: linear-gradient(135deg, #FFFFFF 0%, #FDF2F8 100%);
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   z-index: 9999;
@@ -70,32 +79,32 @@ body {
 .load-logo {
   font-family: 'DM Serif Display', serif;
   color: var(--ink);
-  font-size: 2.6rem;
-  letter-spacing: -0.5px;
+  font-size: 2.8rem;
 }
-.load-logo span { color: var(--blue); }
+.load-logo span { color: var(--pink); }
 .load-sub {
-  color: var(--ink-muted);
-  font-size: .72rem;
+  color: var(--blue);
+  font-size: .75rem;
   letter-spacing: 3px;
   text-transform: uppercase;
   margin-top: 5px;
   font-family: 'Space Mono', monospace;
+  font-weight: 700;
 }
 .load-ring {
-  width: 42px; height: 42px;
-  border: 3px solid var(--border);
-  border-top-color: var(--blue);
+  width: 46px; height: 46px;
+  border: 4px solid var(--pink-pale);
+  border-top-color: var(--pink);
+  border-right-color: var(--blue);
   border-radius: 50%;
   animation: spin .8s linear infinite;
   margin-top: 28px;
 }
 .load-status {
   color: var(--ink-muted);
-  font-size: .76rem;
+  font-size: .8rem;
   margin-top: 14px;
   font-family: 'Space Mono', monospace;
-  min-height: 20px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -103,62 +112,50 @@ body {
 #loginScreen {
   display: none;
   position: fixed; inset: 0;
-  background: var(--paper);
+  background: radial-gradient(circle at 10% 20%, rgba(236,72,153,.12) 0%, rgba(37,99,235,.10) 90%);
   align-items: center; justify-content: center;
   z-index: 1000;
-  overflow: hidden;
-}
-#loginScreen::before {
-  content: '';
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 55% 45% at 15% 85%, rgba(26,86,219,.07) 0%, transparent 65%),
-    radial-gradient(ellipse 40% 50% at 85% 15%, rgba(8,145,178,.05) 0%, transparent 65%);
-  pointer-events: none;
 }
 .login-grid {
-  position: relative; z-index: 1;
   width: min(440px, 95vw);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-lg), 0 0 0 1px var(--border);
+  box-shadow: 0 16px 40px rgba(236,72,153,.18), 0 0 0 1.5px var(--pink-border);
+  background: var(--surface);
   animation: fadeUp .45s ease;
 }
 @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
-.login-form-wrap {
-  background: var(--surface);
-  padding: 44px 40px;
-  display: flex; flex-direction: column; justify-content: center;
-}
+.login-form-wrap { padding: 42px 38px; }
 .role-pills {
   display: flex; gap: 6px;
-  background: var(--paper);
+  background: var(--pink-pale);
+  border: 1px solid var(--pink-border);
   border-radius: var(--radius-sm);
   padding: 4px;
   margin-bottom: 24px;
 }
 .role-pill {
-  flex: 1; padding: 7px 6px;
-  border: none; border-radius: 5px;
-  font-size: .78rem; font-weight: 600;
+  flex: 1; padding: 8px 6px;
+  border: none; border-radius: 6px;
+  font-size: .8rem; font-weight: 700;
   cursor: pointer;
   background: transparent;
-  color: var(--ink-muted);
+  color: var(--ink-soft);
   transition: all .2s;
   font-family: 'DM Sans', sans-serif;
   text-align: center;
 }
 .role-pill.active {
-  background: var(--surface);
-  color: var(--blue);
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(135deg, var(--pink) 0%, var(--blue) 100%);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(236,72,153,.3);
 }
 .lf-label {
   font-size: .78rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--ink-soft);
-  margin-bottom: 5px;
+  margin-bottom: 6px;
   text-transform: uppercase;
   letter-spacing: .5px;
 }
@@ -166,483 +163,313 @@ body {
   width: 100%;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 10px 14px;
+  padding: 11px 14px;
   font-size: .9rem;
   color: var(--ink);
-  background: var(--paper);
+  background: #fff;
   outline: none;
-  transition: border .2s, box-shadow .2s, background .2s;
-  font-family: 'DM Sans', sans-serif;
+  transition: all .2s;
 }
 .lf-input:focus {
-  border-color: var(--blue);
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(26,86,219,.10);
+  border-color: var(--pink);
+  box-shadow: 0 0 0 3px rgba(236,72,153,.18);
 }
 .lf-mb { margin-bottom: 16px; }
 .btn-login {
   width: 100%;
-  padding: 11px;
-  background: var(--blue);
+  padding: 12px;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--pink) 100%);
   color: #fff;
   border: none;
   border-radius: var(--radius-sm);
-  font-size: .9rem;
+  font-size: .92rem;
   font-weight: 700;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
   transition: all .2s;
-  letter-spacing: .3px;
-  margin-top: 4px;
 }
-.btn-login:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(26,86,219,.3); }
+.btn-login:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(236,72,153,.35); }
 .login-error {
   color: var(--red);
-  font-size: .8rem;
+  font-size: .82rem;
   text-align: center;
   min-height: 20px;
-  margin-top: 8px;
-  font-weight: 500;
+  margin-top: 10px;
+  font-weight: 600;
 }
 
 /* ── NAVBAR ─────────────────────────────────────────────── */
 .app-navbar {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1.5px solid var(--pink-border);
   position: sticky; top: 0; z-index: 1100;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 12px rgba(236,72,153,.07);
 }
 
 .navbar-brand-row {
   display: flex; align-items: center;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border-bottom: 1px solid var(--border);
 }
 
 .nav-brand {
   font-family: 'DM Serif Display', serif;
   color: var(--ink);
-  font-size: 1.35rem;
-  flex-shrink: 0;
-}
-.nav-brand span { color: var(--blue); }
-.nav-role-badge {
-  font-size: .65rem;
+  font-size: 1.45rem;
   font-weight: 700;
+}
+.nav-brand span {
+  background: linear-gradient(135deg, var(--pink) 0%, var(--blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.nav-role-badge {
+  font-size: .67rem;
+  font-weight: 800;
   font-family: 'Space Mono', monospace;
   letter-spacing: 1.5px;
-  padding: 3px 9px;
+  padding: 4px 10px;
   border-radius: 99px;
-  margin-left: 10px;
-  flex-shrink: 0;
+  margin-left: 12px;
 }
-.role-admin      { background: var(--blue-pale);  color: var(--blue);  border: 1px solid rgba(26,86,219,.2); }
-.role-superadmin { background: var(--gold-pale);  color: var(--gold);  border: 1px solid rgba(217,119,6,.25); }
-.role-user       { background: var(--green-pale); color: var(--green); border: 1px solid rgba(5,150,105,.2); }
-.nav-user-name {
-  color: var(--ink-muted);
-  font-size: .8rem;
-  font-weight: 500;
-  flex-shrink: 0;
-}
+.role-admin      { background: var(--blue-pale);  color: var(--blue-dark); border: 1.5px solid rgba(37,99,235,.25); }
+.role-superadmin { background: var(--pink-pale);  color: var(--pink-dark); border: 1.5px solid var(--pink-border); }
+.role-user       { background: var(--green-pale); color: var(--green); border: 1.5px solid rgba(16,185,129,.25); }
+
 .btn-nav-logout {
-  background: var(--paper);
-  border: 1px solid var(--border);
-  color: var(--ink-soft);
+  background: #FFF;
+  border: 1.5px solid var(--pink-border);
+  color: var(--pink-dark);
   border-radius: var(--radius-sm);
   padding: 6px 14px;
-  font-size: .78rem;
-  font-weight: 600;
+  font-size: .8rem;
+  font-weight: 700;
   cursor: pointer;
   transition: all .2s;
-  font-family: 'DM Sans', sans-serif;
-  display: flex; align-items: center; gap: 6px;
-  flex-shrink: 0;
 }
-.btn-nav-logout:hover { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.btn-nav-logout:hover { background: var(--pink); color: #FFF; }
 
-/* ── TOP MENU ── */
 .navbar-menu-row {
   display: flex;
-  background: var(--surface);
   overflow-x: auto;
-  padding: 0 10px;
+  padding: 0 14px;
   scrollbar-width: none;
 }
-.navbar-menu-row::-webkit-scrollbar { display: none; } 
+.navbar-menu-row::-webkit-scrollbar { display: none; }
 
 .nav-menu-item {
   display: flex; align-items: center; gap: 8px;
-  padding: 12px 18px;
+  padding: 12px 20px;
   cursor: pointer;
-  font-size: .85rem;
-  font-weight: 600;
+  font-size: .87rem;
+  font-weight: 700;
   color: var(--ink-soft);
   transition: all .2s;
   white-space: nowrap;
   border-bottom: 3px solid transparent;
-  user-select: none;
 }
-.nav-menu-item i { font-size: 1rem; width: 18px; flex-shrink: 0; }
-.nav-menu-item:hover { color: var(--blue); background: var(--blue-pale); }
-.nav-menu-item.active { 
-  color: var(--blue); 
-  border-bottom-color: var(--blue);
-  background: var(--blue-pale);
+.nav-menu-item:hover { color: var(--pink); background: var(--pink-pale); }
+.nav-menu-item.active {
+  color: var(--pink-dark);
+  border-bottom-color: var(--pink);
+  background: var(--pink-pale);
 }
 
 /* ── LAYOUT ─────────────────────────────────────────────── */
-.app-layout { display: block; }
-.main-content { padding: 28px 28px 40px; overflow-x: hidden; min-width: 0; }
+.main-content { padding: 28px; max-width: 1600px; margin: 0 auto; }
 .page { display: none; }
 .page.active { display: block; animation: pageFade .25s ease; }
-@keyframes pageFade { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+@keyframes pageFade { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
-.pg-header { margin-bottom: 24px; }
+.pg-header { margin-bottom: 22px; }
 .pg-title {
   font-family: 'DM Serif Display', serif;
-  font-size: 1.65rem;
+  font-size: 1.85rem;
   color: var(--ink);
-  letter-spacing: -.3px;
 }
-.pg-sub { color: var(--ink-muted); font-size: .82rem; margin-top: 3px; }
+.pg-sub { color: var(--ink-muted); font-size: .85rem; }
 
 /* ── STAT CARDS ──────────────────────────────────────────── */
-.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
 .stat-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 20px;
-  box-shadow: var(--shadow-xs);
-  transition: box-shadow .2s, transform .2s;
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
   position: relative; overflow: hidden;
+  transition: all .2s;
 }
-.stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-.stat-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 3px;
-}
-.stat-card.blue::before  { background: linear-gradient(90deg, var(--blue), var(--blue-light)); }
-.stat-card.green::before { background: linear-gradient(90deg, var(--green), #34D399); }
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; }
+.stat-card.blue::before { background: linear-gradient(90deg, var(--blue), var(--pink)); }
+.stat-card.pink::before { background: linear-gradient(90deg, var(--pink), #F43F5E); }
 .stat-card.amber::before { background: linear-gradient(90deg, var(--amber), #FBBF24); }
-.stat-card.red::before   { background: linear-gradient(90deg, var(--red), #F87171); }
+.stat-card.red::before   { background: linear-gradient(90deg, var(--red), #FB7185); }
 .stat-icon {
-  width: 40px; height: 40px;
+  width: 44px; height: 44px;
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   margin-bottom: 12px;
 }
-.stat-val { font-size: 2rem; font-weight: 700; color: var(--ink); line-height: 1; font-family: 'Space Mono', monospace; }
-.stat-lbl { font-size: .73rem; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; font-weight: 600; }
+.stat-val { font-size: 2.1rem; font-weight: 800; line-height: 1; font-family: 'Space Mono', monospace; }
+.stat-lbl { font-size: .75rem; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; font-weight: 700; }
 
-/* ── CARD TABLE ──────────────────────────────────────────── */
+/* ── TABLE CARD ──────────────────────────────────────────── */
 .card-wrap {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid var(--pink-border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
-  margin-bottom: 18px;
+  margin-bottom: 22px;
 }
 .card-head {
-  padding: 14px 18px;
+  padding: 16px 20px;
+  background: #FFF;
   display: flex; align-items: center; justify-content: space-between;
-  gap: 12px;
   border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
+  flex-wrap: wrap; gap: 12px;
 }
 .card-head-title {
-  font-weight: 700;
-  color: var(--ink);
-  font-size: .9rem;
+  font-weight: 800; font-size: .96rem;
   display: flex; align-items: center; gap: 8px;
-  flex-shrink: 0;
+  color: var(--ink);
 }
-.card-head-title i { color: var(--blue); }
 .search-input {
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 7px 12px;
-  font-size: .82rem;
-  color: var(--ink);
-  outline: none;
-  font-family: 'DM Sans', sans-serif;
-  width: 160px;
-  transition: border .2s, box-shadow .2s;
+  padding: 8px 14px; font-size: .84rem;
+  outline: none; transition: all .2s;
 }
-.search-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,219,.08); }
+.search-input:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(236,72,153,.15); }
 
-.tbl-scroll { max-height: 440px; overflow-y: auto; }
-.data-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+.tbl-scroll { max-height: 520px; overflow-y: auto; }
+.data-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
 .data-table thead th {
-  background: var(--paper);
-  color: var(--ink-muted);
-  font-size: .68rem;
+  background: #FDF2F8;
+  color: var(--pink-dark);
+  font-size: .72rem;
   text-transform: uppercase;
   letter-spacing: .8px;
-  padding: 9px 14px;
-  font-weight: 700;
+  padding: 11px 16px;
+  font-weight: 800;
   font-family: 'Space Mono', monospace;
   white-space: nowrap;
-  position: sticky; top: 0;
-  border-right: 1px solid var(--border);
-  border-bottom: 2px solid var(--border-mid);
+  position: sticky; top: 0; z-index: 2;
+  border-bottom: 2px solid var(--pink-border);
 }
-.data-table thead th:last-child { border-right: none; }
 .data-table tbody td {
-  padding: 9px 14px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--border);
   color: var(--ink-soft);
   vertical-align: middle;
 }
-.data-table tbody tr:last-child td { border-bottom: none; }
-.data-table tbody tr { transition: background .12s; }
-.data-table tbody tr:hover td { background: var(--blue-pale); }
-.data-table tbody tr:hover td:first-child { border-left: 3px solid var(--blue); }
+.data-table tbody tr:hover td { background: var(--pink-pale); }
 
 /* ── BADGES ──────────────────────────────────────────────── */
 .badge {
   display: inline-flex; align-items: center; gap: 4px;
   border-radius: 99px;
-  padding: 3px 10px;
-  font-size: .7rem;
-  font-weight: 700;
+  padding: 4px 10px;
+  font-size: .72rem;
+  font-weight: 800;
   letter-spacing: .3px;
   white-space: nowrap;
 }
-.badge-ontime  { background: var(--green-pale); color: var(--green); }
-.badge-late    { background: var(--red-pale);   color: var(--red); }
-.badge-pending { background: var(--amber-pale); color: var(--amber); }
-.badge-overdue { background: var(--red-pale);   color: var(--red); }
-.badge-freq    { background: var(--blue-pale);  color: var(--blue); font-family: 'Space Mono', monospace; }
-.badge-role    { background: var(--teal-pale);  color: var(--teal); }
+.badge-ontime  { background: var(--green-pale); color: var(--green); border: 1px solid rgba(16,185,129,.3); }
+.badge-late    { background: var(--red-pale);   color: var(--red);   border: 1px solid rgba(239,68,68,.3); }
+.badge-pending { background: var(--amber-pale); color: var(--amber); border: 1px solid rgba(245,158,11,.3); }
+.badge-freq    { background: var(--blue-pale);  color: var(--blue);  border: 1px solid rgba(37,99,235,.2); font-family: 'Space Mono', monospace; }
+.badge-role    { background: var(--pink-pale);  color: var(--pink-dark); border: 1px solid var(--pink-border); }
 
 /* ── BUTTONS ─────────────────────────────────────────────── */
 .btn-primary {
-  background: var(--blue);
+  background: linear-gradient(135deg, var(--blue) 0%, var(--pink) 100%);
   color: #fff; border: none;
   border-radius: var(--radius-sm);
-  padding: 8px 18px;
-  font-size: .83rem; font-weight: 700;
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
-  transition: all .2s;
+  padding: 8px 18px; font-size: .84rem; font-weight: 700;
+  cursor: pointer; transition: all .2s;
   display: inline-flex; align-items: center; gap: 6px;
 }
-.btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(26,86,219,.3); }
+.btn-primary:hover { opacity: .95; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(236,72,153,.3); }
 
-.btn-success {
+.btn-done-action {
   background: var(--green);
-  color: #fff; border: none;
+  color: #FFF; border: none;
   border-radius: var(--radius-sm);
-  padding: 8px 18px;
-  font-size: .83rem; font-weight: 700;
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
-  transition: all .2s;
-  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; font-size: .78rem; font-weight: 800;
+  cursor: pointer; transition: all .15s;
+  display: inline-flex; align-items: center; gap: 5px;
 }
-.btn-success:hover { background: #047857; transform: translateY(-1px); }
+.btn-done-action:hover { background: #059669; transform: scale(1.03); }
+
+.btn-resched-action {
+  background: var(--blue);
+  color: #FFF; border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 12px; font-size: .78rem; font-weight: 800;
+  cursor: pointer; transition: all .15s;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.btn-resched-action:hover { background: var(--blue-dark); transform: scale(1.03); }
+.btn-resched-action:disabled { opacity: .4; cursor: not-allowed; transform: none; }
 
 .btn-whatsapp {
   background: #25D366;
   color: #fff; border: none;
   border-radius: var(--radius-sm);
-  padding: 6px 12px;
-  font-size: .78rem; font-weight: 700;
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
-  transition: all .2s;
+  padding: 6px 12px; font-size: .8rem; font-weight: 700;
+  cursor: pointer; transition: all .18s;
   display: inline-flex; align-items: center; gap: 5px;
 }
-.btn-whatsapp:hover { background: #1FAD53; transform: translateY(-1px); }
+.btn-whatsapp:hover { background: #1EBE5D; transform: translateY(-1px); }
 
 .btn-icon {
-  background: var(--paper);
+  background: #FFF;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 6px 10px;
-  font-size: .8rem;
-  cursor: pointer;
-  transition: all .18s;
+  padding: 6px 10px; font-size: .8rem;
+  cursor: pointer; transition: all .18s;
   color: var(--ink-soft);
-  display: inline-flex; align-items: center; gap: 5px;
 }
-.btn-icon:hover { background: var(--blue-pale); border-color: var(--blue); color: var(--blue); }
-.btn-icon.danger:hover { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.btn-icon:hover { border-color: var(--pink); color: var(--pink); }
 
 .btn-generate {
-  background: linear-gradient(135deg, #1A56DB 0%, #0891B2 100%);
+  background: linear-gradient(135deg, var(--pink) 0%, var(--blue) 100%);
   color: #fff; border: none;
   border-radius: var(--radius);
-  padding: 14px 40px;
-  font-size: .95rem; font-weight: 800;
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
-  transition: all .25s;
+  padding: 13px 36px; font-size: .95rem; font-weight: 800;
+  cursor: pointer; transition: all .25s;
   display: inline-flex; align-items: center; gap: 10px;
-  box-shadow: 0 6px 24px rgba(26,86,219,.35);
-  letter-spacing: .5px;
+  box-shadow: 0 6px 20px rgba(236,72,153,.35);
 }
-.btn-generate:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 32px rgba(26,86,219,.45); }
+.btn-generate:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37,99,235,.4); }
 
-/* ── CHART GRID ──────────────────────────────────────────── */
-.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+/* ── CHARTS & OTHERS ─────────────────────────────────────── */
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
 .chart-card {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid var(--pink-border);
   border-radius: var(--radius);
   padding: 20px;
-  box-shadow: var(--shadow-xs);
-}
-.chart-title {
-  font-weight: 700; color: var(--ink);
-  font-size: .87rem; margin-bottom: 16px;
-  display: flex; align-items: center; gap: 7px;
-}
-.chart-title i { color: var(--blue); }
-
-/* ── LEADERBOARD ─────────────────────────────────────────── */
-.lb-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-}
-.lb-item:last-child { border-bottom: none; padding-bottom: 0; }
-.lb-rank {
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.3rem;
-  width: 32px; text-align: center; flex-shrink: 0;
-  color: var(--ink-muted);
-}
-.lb-rank.r1 { color: #D97706; }
-.lb-rank.r2 { color: #6B7DB3; }
-.lb-rank.r3 { color: #A87040; }
-.lb-name { font-weight: 700; color: var(--ink); font-size: .87rem; }
-.lb-dept { font-size: .74rem; color: var(--ink-muted); margin-top: 1px; }
-.lb-score {
-  margin-left: auto; text-align: right;
-  font-family: 'Space Mono', monospace;
-}
-.lb-score-val { font-size: 1.4rem; font-weight: 700; }
-.lb-score-meta { font-size: .67rem; color: var(--ink-muted); }
-
-/* ── MY TASKS ─────────────────────────────────────────────── */
-.task-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  margin-bottom: 14px;
-  box-shadow: var(--shadow-xs);
-  overflow: hidden;
-  transition: box-shadow .2s;
-}
-.task-card:hover { box-shadow: var(--shadow-sm); }
-.task-card.overdue { border-left: 4px solid var(--red); }
-.task-card.ok { border-left: 4px solid var(--green); }
-.task-head {
-  padding: 14px 18px;
-  display: flex; align-items: flex-start; justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.task-name { font-weight: 700; color: var(--ink); font-size: .95rem; }
-.task-meta { font-size: .78rem; color: var(--ink-muted); margin-top: 5px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.task-meta-sep { color: var(--border-mid); }
-.task-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
-
-/* ── EMPTY STATE ─────────────────────────────────────────── */
-.empty-state {
-  text-align: center; padding: 60px 20px;
-  color: var(--ink-muted);
-}
-.empty-state i { font-size: 3rem; color: var(--border-mid); display: block; margin-bottom: 12px; }
-.empty-state strong { color: var(--ink-soft); font-size: 1rem; display: block; }
-
-/* ── MODAL ───────────────────────────────────────────────── */
-.modal-content { border: none; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
-.modal-header {
-  background: var(--ink);
-  color: #fff; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  padding: 16px 22px;
-}
-.modal-header .modal-title { font-family: 'DM Serif Display', serif; font-size: 1.15rem; }
-.modal-header .btn-close { filter: invert(1); opacity: .6; }
-.modal-header .btn-close:hover { opacity: 1; }
-.form-label { font-size: .78rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
-.form-control, .form-select {
-  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-  padding: 9px 12px; font-size: .86rem; color: var(--ink);
-  font-family: 'DM Sans', sans-serif;
-  transition: border .2s, box-shadow .2s;
-}
-.form-control:focus, .form-select:focus {
-  border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,219,.10); outline: none;
+  box-shadow: var(--shadow-sm);
 }
 
-/* ── TOAST ───────────────────────────────────────────────── */
 .toast-wrap { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
 .app-toast {
   background: var(--ink);
   border-radius: var(--radius-sm);
-  padding: 12px 16px;
-  min-width: 260px;
-  max-width: 340px;
-  display: flex; align-items: center; gap: 10px;
-  box-shadow: var(--shadow-lg);
-  animation: toastIn .3s ease;
-  font-size: .83rem; font-weight: 500;
-  color: #D0DCF5;
-  border: 1px solid rgba(255,255,255,.08);
+  padding: 12px 18px;
+  color: #FFF; font-size: .85rem; font-weight: 600;
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--pink);
 }
-@keyframes toastIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-.t-icon { font-size: 1rem; flex-shrink: 0; }
-.t-success .t-icon { color: #34D399; }
-.t-error   .t-icon { color: #F87171; }
-.t-info    .t-icon { color: #60A5FA; }
 
-/* ── RANK CARDS ──────────────────────────────────────────────── */
-.rank-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
-.rank-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 14px;
-  box-shadow: var(--shadow-xs);
-  display: flex; flex-direction: column; align-items: center;
-  text-align: center; gap: 5px;
-  position: relative; overflow: hidden;
-  transition: box-shadow .2s, transform .2s;
-}
-.rank-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-.rank-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; }
-.rank-card.excellent::before { background: linear-gradient(90deg,#059669,#34D399); }
-.rank-card.good::before      { background: linear-gradient(90deg,#1A56DB,#3B82F6); }
-.rank-card.average::before   { background: linear-gradient(90deg,#D97706,#FBBF24); }
-.rank-card.improve::before   { background: linear-gradient(90deg,#DC2626,#F87171); }
-.rank-emoji { font-size: 1.8rem; line-height: 1.2; }
-.rank-label { font-weight: 700; font-size: .8rem; color: var(--ink); }
-.rank-person { font-size: .75rem; color: var(--ink-muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
-.rank-score-num { font-family: 'Space Mono', monospace; font-size: 1.25rem; font-weight: 700; }
-.rank-stats-sm { font-size: .68rem; color: var(--ink-muted); }
-.rank-card.excellent .rank-score-num { color: var(--green); }
-.rank-card.good      .rank-score-num { color: var(--blue); }
-.rank-card.average   .rank-score-num { color: var(--amber); }
-.rank-card.improve   .rank-score-num { color: var(--red); }
-
-/* ── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   .chart-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 768px) {
-  .main-content { padding: 16px 14px 32px; }
-  .login-grid { grid-template-columns: 1fr; height: auto; }
-  .login-form-wrap { padding: 32px 24px; }
-  .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .stat-val { font-size: 1.5rem; }
-  .btn-generate { padding: 12px 24px; font-size: .88rem; }
-  .task-head { flex-direction: column; }
-  .task-actions { width: 100%; }
 }
 </style>
 </head>
@@ -651,7 +478,7 @@ body {
 <!-- LOADING -->
 <div id="loadingScreen">
   <div class="load-logo">&#9745; Check<span>List</span></div>
-  <div class="load-sub">Maintenance Management System</div>
+  <div class="load-sub">Maintenance Management</div>
   <div class="load-ring"></div>
   <div class="load-status" id="loadStatus">Initializing…</div>
 </div>
@@ -660,9 +487,9 @@ body {
 <div id="loginScreen">
   <div class="login-grid">
     <div class="login-form-wrap">
-      <div style="text-align:center;margin-bottom:28px;">
-        <div style="font-family:'DM Serif Display',serif;font-size:1.9rem;color:var(--ink);">&#9745; Check<span style="color:var(--blue);">List</span></div>
-        <div style="font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--ink-muted);margin-top:4px;font-family:'Space Mono',monospace;">Maintenance Management</div>
+      <div style="text-align:center;margin-bottom:26px;">
+        <div style="font-family:'DM Serif Display',serif;font-size:2rem;color:var(--ink);">&#9745; Check<span style="color:var(--pink);">List</span></div>
+        <div style="font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--blue);font-weight:700;">Maintenance Management</div>
       </div>
       <div class="role-pills" id="rolePills">
         <button class="role-pill active" id="pill-admin" onclick="switchRole('admin')"><i class="bi bi-shield-lock me-1"></i>Admin</button>
@@ -690,8 +517,8 @@ body {
       <div class="nav-brand">&#9745; Check<span>List</span></div>
       <span class="nav-role-badge" id="navRoleBadge"></span>
       <div class="ms-auto d-flex align-items-center gap-3">
-        <span class="nav-user-name d-none d-sm-block" id="navUserName"></span>
-        <button class="btn-nav-logout" onclick="doLogout()"><i class="bi bi-box-arrow-right"></i><span class="d-none d-sm-inline">Logout</span></button>
+        <span class="d-none d-sm-block fw-bold text-secondary" id="navUserName"></span>
+        <button class="btn-nav-logout" onclick="doLogout()"><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
       </div>
     </div>
     
@@ -713,238 +540,251 @@ body {
     </div>
   </nav>
 
-  <div class="app-layout">
-    <main class="main-content">
+  <div class="main-content">
 
-      <!-- ── DASHBOARD ──────────────────────────────────── -->
-      <div class="page active" id="page-dashboard">
-        <div class="pg-header">
-          <div class="pg-title">Dashboard</div>
-          <div class="pg-sub">Live maintenance overview</div>
+    <!-- ── DASHBOARD ──────────────────────────────────── -->
+    <div class="page active" id="page-dashboard">
+      <div class="pg-header">
+        <div class="pg-title">Dashboard Overview</div>
+        <div class="pg-sub">Real-time status of scheduled maintenance tasks</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card blue">
+          <div class="stat-icon" style="background:var(--blue-pale);color:var(--blue);"><i class="bi bi-people-fill"></i></div>
+          <div class="stat-val" id="st-doers">—</div><div class="stat-lbl">Active Doers</div>
         </div>
-        <div class="stat-grid">
-          <div class="stat-card blue">
-            <div class="stat-icon" style="background:var(--blue-pale);"><i class="bi bi-people-fill" style="color:var(--blue);"></i></div>
-            <div class="stat-val" id="st-doers">—</div><div class="stat-lbl">Doers</div>
-          </div>
-          <div class="stat-card green">
-            <div class="stat-icon" style="background:var(--green-pale);"><i class="bi bi-check2-all" style="color:var(--green);"></i></div>
-            <div class="stat-val" id="st-done">—</div><div class="stat-lbl">Completed</div>
-          </div>
-          <div class="stat-card amber">
-            <div class="stat-icon" style="background:var(--amber-pale);"><i class="bi bi-clock-history" style="color:var(--amber);"></i></div>
-            <div class="stat-val" id="st-pending">—</div><div class="stat-lbl">Pending</div>
-          </div>
-          <div class="stat-card red">
-            <div class="stat-icon" style="background:var(--red-pale);"><i class="bi bi-exclamation-triangle-fill" style="color:var(--red);"></i></div>
-            <div class="stat-val" id="st-overdue">—</div><div class="stat-lbl">Overdue</div>
-          </div>
+        <div class="stat-card pink">
+          <div class="stat-icon" style="background:var(--pink-pale);color:var(--pink);"><i class="bi bi-check2-all"></i></div>
+          <div class="stat-val" id="st-done">—</div><div class="stat-lbl">Completed Tasks</div>
         </div>
-        <div class="chart-grid">
-          <div class="chart-card"><div class="chart-title"><i class="bi bi-pie-chart-fill"></i>Compliance Rate</div><canvas id="chartCompliance" height="200"></canvas></div>
-          <div class="chart-card"><div class="chart-title"><i class="bi bi-bar-chart-fill"></i>Tasks by Department</div><canvas id="chartDept" height="200"></canvas></div>
+        <div class="stat-card amber">
+          <div class="stat-icon" style="background:var(--amber-pale);color:var(--amber);"><i class="bi bi-clock-history"></i></div>
+          <div class="stat-val" id="st-pending">—</div><div class="stat-lbl">Pending Tasks</div>
         </div>
-        <div class="card-wrap">
-          <div class="card-head"><span class="card-head-title"><i class="bi bi-trophy-fill" style="color:var(--gold);"></i>Top Performers</span></div>
-          <div style="padding:16px;" id="dashLeaderboard"></div>
+        <div class="stat-card red">
+          <div class="stat-icon" style="background:var(--red-pale);color:var(--red);"><i class="bi bi-exclamation-triangle-fill"></i></div>
+          <div class="stat-val" id="st-overdue">—</div><div class="stat-lbl">Overdue Tasks</div>
         </div>
       </div>
+      <div class="chart-grid">
+        <div class="chart-card"><h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2 text-primary"></i>Compliance Ratio</h6><canvas id="chartCompliance" height="200"></canvas></div>
+        <div class="chart-card"><h6 class="fw-bold mb-3"><i class="bi bi-bar-chart me-2 text-danger"></i>Department Tasks</h6><canvas id="chartDept" height="200"></canvas></div>
+      </div>
+    </div>
 
-      <!-- ── DOERS ──────────────────────────────────────── -->
-      <div class="page" id="page-doers">
-        <div class="pg-header d-flex align-items-start justify-content-between flex-wrap gap-3">
-          <div><div class="pg-title">Doers</div><div class="pg-sub">Manage maintenance personnel</div></div>
-          <div class="d-flex gap-2 flex-wrap">
-            <button class="btn-primary" onclick="openDoerModal()"><i class="bi bi-plus-lg"></i>Add Doer</button>
-            <button class="btn-icon" onclick="exportCsv('doers')"><i class="bi bi-download"></i>CSV</button>
-          </div>
+    <!-- ── DOERS ──────────────────────────────────────── -->
+    <div class="page" id="page-doers">
+      <div class="pg-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div><div class="pg-title">Maintenance Personnel</div><div class="pg-sub">Registered team members and roles</div></div>
+        <button class="btn-primary" onclick="openDoerModal()"><i class="bi bi-plus-lg"></i>Add Doer</button>
+      </div>
+      <div class="card-wrap">
+        <div class="card-head">
+          <span class="card-head-title"><i class="bi bi-people text-primary"></i>Team Members</span>
+          <input type="text" class="search-input" placeholder="Search..." oninput="filterTable('doerTable',this.value)"/>
         </div>
-        <div class="card-wrap">
-          <div class="card-head">
-            <span class="card-head-title"><i class="bi bi-people"></i>Doer List</span>
-            <input type="text" class="search-input" placeholder="Search…" oninput="filterTable('doerTable',this.value)"/>
-          </div>
-          <div class="tbl-scroll">
-            <table class="data-table" id="doerTable">
-              <thead><tr><th>#</th><th>Name</th><th>Department</th><th>Email</th><th>Phone</th><th>WhatsApp</th><th>Role</th><th>Actions</th></tr></thead>
-              <tbody id="doerTbody"></tbody>
-            </table>
-          </div>
+        <div class="tbl-scroll">
+          <table class="data-table" id="doerTable">
+            <thead><tr><th>#</th><th>Name</th><th>Department</th><th>Email</th><th>Phone</th><th>WhatsApp</th><th>Role</th><th>Actions</th></tr></thead>
+            <tbody id="doerTbody"></tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-      <!-- ── TASKS ──────────────────────────────────────── -->
-      <div class="page" id="page-tasks">
-        <div class="pg-header d-flex align-items-start justify-content-between flex-wrap gap-3">
-          <div><div class="pg-title">Tasks</div><div class="pg-sub">Define maintenance tasks &amp; frequency</div></div>
-          <div class="d-flex gap-2 flex-wrap">
-            <button class="btn-primary" onclick="openTaskModal()"><i class="bi bi-plus-lg"></i>Add Task</button>
-            <button class="btn-icon" onclick="exportCsv('tasks')"><i class="bi bi-download"></i>CSV</button>
-          </div>
+    <!-- ── TASKS ──────────────────────────────────────── -->
+    <div class="page" id="page-tasks">
+      <div class="pg-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div><div class="pg-title">Defined Tasks</div><div class="pg-sub">Maintenance schedules and assignees</div></div>
+        <button class="btn-primary" onclick="openTaskModal()"><i class="bi bi-plus-lg"></i>Add Task</button>
+      </div>
+      <div class="text-center my-3">
+        <button class="btn-generate" onclick="generateMaster()"><i class="bi bi-lightning-charge-fill"></i>Generate Master Schedule</button>
+        <div class="text-muted small mt-2">Generates multi-year schedules for selected items without losing completed history.</div>
+      </div>
+      <div class="card-wrap">
+        <div class="card-head">
+          <span class="card-head-title"><i class="bi bi-list-task text-primary"></i>Task Directory</span>
+          <input type="text" class="search-input" placeholder="Search..." oninput="filterTable('taskTable',this.value)"/>
         </div>
-        <div class="text-center mb-4">
-          <button class="btn-generate" onclick="generateMaster()"><i class="bi bi-play-circle-fill"></i>START — Generate Master Schedule</button>
-          <div style="font-size:.76rem;color:var(--ink-muted);margin-top:8px;">Only selected tasks will be scheduled. Previous "Done" marks are safe.</div>
-        </div>
-        <div class="card-wrap">
-          <div class="card-head">
-            <span class="card-head-title"><i class="bi bi-list-task"></i>Task List</span>
-            <input type="text" class="search-input" placeholder="Search…" oninput="filterTable('taskTable',this.value)"/>
-          </div>
-          <div class="tbl-scroll">
-            <table class="data-table" id="taskTable">
-              <thead><tr><th><input type="checkbox" id="selectAllTasks" onclick="toggleAllTasks(this)"></th><th>ID</th><th>Task Name</th><th>Doer</th><th>Department</th><th>Frequency</th><th>Start Date</th><th>Actions</th></tr></thead>
-              <tbody id="taskTbody"></tbody>
-            </table>
-          </div>
+        <div class="tbl-scroll">
+          <table class="data-table" id="taskTable">
+            <thead><tr><th><input type="checkbox" id="selectAllTasks" onclick="toggleAllTasks(this)"></th><th>ID</th><th>Task Name</th><th>Doer</th><th>Department</th><th>Frequency</th><th>Start Date</th><th>Actions</th></tr></thead>
+            <tbody id="taskTbody"></tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-      <!-- ── MASTER SCHEDULE (PENDING ONLY) ────────────────── -->
-      <div class="page" id="page-master">
-        <div class="pg-header d-flex align-items-start justify-content-between flex-wrap gap-3">
-          <div><div class="pg-title">Master Schedule</div><div class="pg-sub">Pending scheduled maintenance tasks</div></div>
-          <button class="btn-icon" onclick="exportFilteredCsv('pending')"><i class="bi bi-download"></i>CSV</button>
+    <!-- ── MASTER SCHEDULE (PENDING ONLY) ────────────────── -->
+    <div class="page" id="page-master">
+      <div class="pg-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div><div class="pg-title">Master Schedule</div><div class="pg-sub">Upcoming and pending maintenance tasks</div></div>
+        <button class="btn-icon" onclick="exportFilteredCsv('pending')"><i class="bi bi-download me-1"></i>CSV Export</button>
+      </div>
+      <div class="card-wrap">
+        <div class="card-head">
+          <span class="card-head-title"><i class="bi bi-calendar3 text-primary"></i>Pending Scheduled Maintenance</span>
+          <input type="text" class="search-input" placeholder="Search..." oninput="filterTable('masterTable',this.value)"/>
         </div>
-        <div class="card-wrap">
-          <div class="card-head">
-            <span class="card-head-title"><i class="bi bi-calendar2-week"></i>Pending Tasks</span>
-            <input type="text" class="search-input" placeholder="Search…" oninput="filterTable('masterTable',this.value)"/>
-          </div>
-          <div class="tbl-scroll">
-            <table class="data-table" id="masterTable">
-              <thead><tr><th>Name</th><th>Department</th><th>Task ID</th><th>Freq</th><th>Task</th><th>Planned</th><th>Actual</th><th>Status</th><th>Notify</th></tr></thead>
-              <tbody id="masterTbody"></tbody>
-            </table>
-          </div>
+        <div class="tbl-scroll">
+          <table class="data-table" id="masterTable">
+            <thead>
+              <tr>
+                <th>NAME</th>
+                <th>DEPARTMENT</th>
+                <th>TASK ID</th>
+                <th>FREQ</th>
+                <th>TASK</th>
+                <th>PLANNED</th>
+                <th>ACTUAL</th>
+                <th>STATUS</th>
+                <th>MARK DONE</th>
+                <th>RE-SCHEDULE</th>
+                <th>NOTIFY</th>
+              </tr>
+            </thead>
+            <tbody id="masterTbody"></tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-      <!-- ── ARCHIVE (ALL / COMPLETED SCHEDULE RECORDS) ───── -->
-      <div class="page" id="page-archive">
-        <div class="pg-header d-flex align-items-start justify-content-between flex-wrap gap-3">
-          <div><div class="pg-title">Archive</div><div class="pg-sub">Historical record of all scheduled tasks &amp; executions</div></div>
-          <button class="btn-icon" onclick="exportFilteredCsv('archive')"><i class="bi bi-download"></i>CSV</button>
+    <!-- ── ARCHIVE ────────────────────────────────────── -->
+    <div class="page" id="page-archive">
+      <div class="pg-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div><div class="pg-title">Completed Archive</div><div class="pg-sub">Historical audit record of all executions</div></div>
+        <button class="btn-icon" onclick="exportFilteredCsv('archive')"><i class="bi bi-download me-1"></i>CSV Export</button>
+      </div>
+      <div class="card-wrap">
+        <div class="card-head">
+          <span class="card-head-title"><i class="bi bi-archive text-primary"></i>All Executed Tasks</span>
+          <input type="text" class="search-input" placeholder="Search..." oninput="filterTable('archiveTable',this.value)"/>
         </div>
-        <div class="card-wrap">
-          <div class="card-head">
-            <span class="card-head-title"><i class="bi bi-archive"></i>Archived Schedule Records</span>
-            <input type="text" class="search-input" placeholder="Search…" oninput="filterTable('archiveTable',this.value)"/>
-          </div>
-          <div class="tbl-scroll">
-            <table class="data-table" id="archiveTable">
-              <thead><tr><th>Name</th><th>Department</th><th>Task ID</th><th>Freq</th><th>Task</th><th>Planned</th><th>Actual</th><th>Status</th><th>Remarks</th></tr></thead>
-              <tbody id="archiveTbody"></tbody>
-            </table>
-          </div>
+        <div class="tbl-scroll">
+          <table class="data-table" id="archiveTable">
+            <thead><tr><th>NAME</th><th>DEPARTMENT</th><th>TASK ID</th><th>FREQ</th><th>TASK</th><th>PLANNED</th><th>ACTUAL</th><th>STATUS</th><th>REMARKS</th></tr></thead>
+            <tbody id="archiveTbody"></tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-      <!-- ── DONE LIST ──────────────────────────────────── -->
-      <div class="page" id="page-donelist">
-        <div class="pg-header d-flex align-items-start justify-content-between flex-wrap gap-3">
-          <div><div class="pg-title">Done List</div><div class="pg-sub">Completed maintenance records</div></div>
-          <button class="btn-icon" onclick="exportCsv('done_list')"><i class="bi bi-download"></i>CSV</button>
+    <!-- ── DONE LIST ──────────────────────────────────── -->
+    <div class="page" id="page-donelist">
+      <div class="pg-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div><div class="pg-title">Done Log</div><div class="pg-sub">Submissions confirmed by operators and administrators</div></div>
+        <button class="btn-icon" onclick="exportCsv('done_list')"><i class="bi bi-download me-1"></i>CSV</button>
+      </div>
+      <div class="card-wrap">
+        <div class="card-head">
+          <span class="card-head-title"><i class="bi bi-check2-circle text-success"></i>Confirmed Completions</span>
+          <input type="text" class="search-input" placeholder="Search..." oninput="filterTable('doneTable',this.value)"/>
         </div>
-        <div class="card-wrap">
-          <div class="card-head">
-            <span class="card-head-title"><i class="bi bi-check2-all"></i>Completed Tasks</span>
-            <input type="text" class="search-input" placeholder="Search…" oninput="filterTable('doneTable',this.value)"/>
-          </div>
-          <div class="tbl-scroll">
-            <table class="data-table" id="doneTable">
-              <thead><tr><th>Name</th><th>Dept</th><th>Task</th><th>Planned</th><th>Actual</th><th>Status</th><th>Submitted By</th><th>Submitted On</th></tr></thead>
-              <tbody id="doneTbody"></tbody>
-            </table>
-          </div>
+        <div class="tbl-scroll">
+          <table class="data-table" id="doneTable">
+            <thead><tr><th>NAME</th><th>DEPARTMENT</th><th>TASK</th><th>PLANNED</th><th>ACTUAL</th><th>STATUS</th><th>SUBMITTED BY</th><th>DATE</th></tr></thead>
+            <tbody id="doneTbody"></tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-      <!-- ── SCORING ─────────────────────────────────────── -->
-      <div class="page" id="page-scoring">
-        <div class="pg-header d-flex align-items-start justify-content-between flex-wrap gap-3">
-          <div><div class="pg-title">Scoring &amp; Leaderboard</div><div class="pg-sub">Score formula: (On-Time / Total × 100) − 100</div></div>
-          <button class="btn-icon" onclick="exportCsv('scoring')"><i class="bi bi-download"></i>CSV</button>
-        </div>
-
-        <div id="perfRankCards" style="margin-bottom:18px;"></div>
-
-        <div class="row g-3 mb-3">
-          <div class="col-md-5">
-            <div class="card-wrap h-100">
-              <div class="card-head"><span class="card-head-title"><i class="bi bi-trophy" style="color:var(--gold);"></i>Leaderboard</span></div>
-              <div style="padding:16px;" id="scoringLeaderboard"></div>
-            </div>
-          </div>
-          <div class="col-md-7">
-            <div class="chart-card h-100"><div class="chart-title"><i class="bi bi-bar-chart-fill"></i>Score Distribution</div><canvas id="chartScore" height="200"></canvas></div>
-          </div>
-        </div>
-        <div class="card-wrap">
-          <div class="card-head"><span class="card-head-title"><i class="bi bi-table"></i>All Score Records</span></div>
-          <div class="tbl-scroll">
-            <table class="data-table" id="scoreTable">
-              <thead><tr><th>Name</th><th>Dept</th><th>Task</th><th>Planned</th><th>Actual</th><th>On Time</th><th>Score</th><th>Date</th></tr></thead>
-              <tbody id="scoreTbody"></tbody>
-            </table>
-          </div>
+    <!-- ── SCORING ─────────────────────────────────────── -->
+    <div class="page" id="page-scoring">
+      <div class="pg-header">
+        <div class="pg-title">Performance &amp; Scoring</div>
+        <div class="pg-sub">Compliance score tracking based on on-time completion ratios</div>
+      </div>
+      <div class="card-wrap">
+        <div class="card-head"><span class="card-head-title"><i class="bi bi-trophy text-warning"></i>Audit Scores</span></div>
+        <div class="tbl-scroll">
+          <table class="data-table" id="scoreTable">
+            <thead><tr><th>NAME</th><th>DEPARTMENT</th><th>TASK</th><th>PLANNED</th><th>ACTUAL</th><th>ON TIME</th><th>SCORE</th><th>TIMESTAMP</th></tr></thead>
+            <tbody id="scoreTbody"></tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-      <!-- ── MY TASKS (USER VIEW) ─────────────── -->
-      <div class="page" id="page-myTasks">
-        <div class="pg-header">
-          <div class="pg-title">My Pending Tasks</div>
-          <div class="pg-sub" id="myTasksSub">Tasks scheduled for you in the next 10 days</div>
-        </div>
-        <div id="myTasksContainer"></div>
+    <!-- ── MY TASKS (USER VIEW) ────────────────────────── -->
+    <div class="page" id="page-myTasks">
+      <div class="pg-header">
+        <div class="pg-title">My Pending Tasks</div>
+        <div class="pg-sub">Your scheduled maintenance jobs for the upcoming 10 days</div>
       </div>
+      <div id="myTasksContainer"></div>
+    </div>
 
-    </main>
   </div>
 </div>
 
-<!-- ── DOER MODAL ──────────────────────────────────────────── -->
+<!-- ── MODAL: RE-SCHEDULE ──────────────────────────────────── -->
+<div class="modal fade" id="reScheduleModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header bg-dark text-white">
+      <h6 class="modal-title fw-bold"><i class="bi bi-calendar-event me-2 text-warning"></i>Re-Schedule Maintenance</h6>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    </div>
+    <div class="modal-body p-4">
+      <input type="hidden" id="rs_task_id"/>
+      <input type="hidden" id="rs_curr_resched_count"/>
+      <div class="mb-3">
+        <label class="form-label fw-bold small text-uppercase">New Planned Date *</label>
+        <input type="date" class="form-control" id="rs_new_date" required/>
+      </div>
+      <div class="alert alert-warning small mb-0">
+        <i class="bi bi-info-circle me-1"></i> You can re-schedule a task up to <strong>3 times</strong>. Changing this date marks the task for the new date while maintaining audit history.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+      <button class="btn-resched-action" onclick="confirmReSchedule()"><i class="bi bi-check2"></i>Update Schedule</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- ── MODAL: DOER ─────────────────────────────────────────── -->
 <div class="modal fade" id="doerModal" tabindex="-1">
   <div class="modal-dialog"><div class="modal-content">
-    <div class="modal-header"><h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Doer Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-header bg-dark text-white"><h6 class="modal-title fw-bold">Personnel Details</h6><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
     <div class="modal-body p-4">
       <input type="hidden" id="doerEditId"/>
       <div class="row g-3">
-        <div class="col-md-6"><label class="form-label">Full Name *</label><input type="text" class="form-control" id="d_name" placeholder="e.g. Swapan Kr Ghorai"/></div>
-        <div class="col-md-6"><label class="form-label">Department *</label><input type="text" class="form-control" id="d_dept" placeholder="e.g. Yarn Division"/></div>
-        <div class="col-md-6"><label class="form-label">Email Address</label><input type="email" class="form-control" id="d_email" placeholder="name@company.com"/></div>
-        <div class="col-md-6"><label class="form-label">Phone Number</label><input type="text" class="form-control" id="d_phone" placeholder="+91 9000000000"/></div>
-        <div class="col-md-6"><label class="form-label">WhatsApp</label><input type="text" class="form-control" id="d_wa" placeholder="919000000000"/></div>
-        <div class="col-md-6">
-          <label class="form-label">User Type</label>
+        <div class="col-12"><label class="form-label small fw-bold">Full Name *</label><input type="text" class="form-control" id="d_name"/></div>
+        <div class="col-md-6"><label class="form-label small fw-bold">Department *</label><input type="text" class="form-control" id="d_dept"/></div>
+        <div class="col-md-6"><label class="form-label small fw-bold">WhatsApp *</label><input type="text" class="form-control" id="d_wa" placeholder="91..."/></div>
+        <div class="col-md-6"><label class="form-label small fw-bold">Email</label><input type="email" class="form-control" id="d_email"/></div>
+        <div class="col-md-6"><label class="form-label small fw-bold">Phone</label><input type="text" class="form-control" id="d_phone"/></div>
+        <div class="col-12">
+          <label class="form-label small fw-bold">Role</label>
           <select class="form-select" id="d_usertype">
             <option value="User">User</option>
-            <option value="Super Admin">Super Admin</option>
             <option value="Admin">Admin</option>
+            <option value="Super Admin">Super Admin</option>
           </select>
         </div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      <button class="btn-primary" onclick="saveDoer()"><i class="bi bi-check-lg"></i>Save Doer</button>
+      <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+      <button class="btn-primary" onclick="saveDoer()">Save Personnel</button>
     </div>
   </div></div>
 </div>
 
-<!-- ── TASK MODAL ──────────────────────────────────────────── -->
+<!-- ── MODAL: TASK ─────────────────────────────────────────── -->
 <div class="modal fade" id="taskModal" tabindex="-1">
   <div class="modal-dialog modal-lg"><div class="modal-content">
-    <div class="modal-header"><h5 class="modal-title"><i class="bi bi-list-task me-2"></i>Task Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-header bg-dark text-white"><h6 class="modal-title fw-bold">Maintenance Task Details</h6><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
     <div class="modal-body p-4">
       <input type="hidden" id="taskEditId"/>
       <div class="row g-3">
-        <div class="col-12"><label class="form-label">Task Name *</label><input type="text" class="form-control" id="t_name" placeholder="e.g. B. Card-1 Machine Maintenance"/></div>
-        <div class="col-md-6"><label class="form-label">Assign Doer *</label><select class="form-select" id="t_doer" onchange="autoFillDept()"><option value="">— Select Doer —</option></select></div>
-        <div class="col-md-6"><label class="form-label">Department</label><input type="text" class="form-control" id="t_dept" placeholder="Auto-filled from doer"/></div>
+        <div class="col-12"><label class="form-label small fw-bold">Task Name *</label><input type="text" class="form-control" id="t_name"/></div>
+        <div class="col-md-6"><label class="form-label small fw-bold">Assigned Doer *</label><select class="form-select" id="t_doer" onchange="autoFillDept()"></select></div>
+        <div class="col-md-6"><label class="form-label small fw-bold">Department</label><input type="text" class="form-control" id="t_dept"/></div>
         <div class="col-md-6">
-          <label class="form-label">Frequency *</label>
+          <label class="form-label small fw-bold">Frequency *</label>
           <select class="form-select" id="t_freq">
             <option value="D">Daily (D)</option>
             <option value="W">Weekly (W)</option>
@@ -956,43 +796,12 @@ body {
             <option value="Y">Yearly (Y)</option>
           </select>
         </div>
-        <div class="col-md-6"><label class="form-label">Start Date *</label><input type="date" class="form-control" id="t_date"/></div>
+        <div class="col-md-6"><label class="form-label small fw-bold">Start Date *</label><input type="date" class="form-control" id="t_date"/></div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      <button class="btn-primary" onclick="saveTask()"><i class="bi bi-check-lg"></i>Save Task</button>
-    </div>
-  </div></div>
-</div>
-
-<!-- ── SUBMIT TASK MODAL ───────────────────────────────────── -->
-<div class="modal fade" id="submitModal" tabindex="-1">
-  <div class="modal-dialog modal-lg"><div class="modal-content">
-    <div class="modal-header"><h5 class="modal-title"><i class="bi bi-clipboard2-check me-2"></i>Complete Task</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-    <div class="modal-body p-4" id="submitModalBody"></div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      <button class="btn-success" onclick="confirmSubmit()"><i class="bi bi-check2-circle"></i>Submit Completion</button>
-    </div>
-  </div></div>
-</div>
-
-<!-- ── SHIFT DATE MODAL ────────────────────────────────────── -->
-<div class="modal fade" id="shiftModal" tabindex="-1">
-  <div class="modal-dialog"><div class="modal-content">
-    <div class="modal-header"><h5 class="modal-title"><i class="bi bi-calendar-event me-2"></i>Shift Schedule Date</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-    <div class="modal-body p-4">
-      <input type="hidden" id="shift_task_id"/>
-      <div class="mb-3">
-        <label class="form-label">New Planned Date *</label>
-        <input type="date" class="form-control" id="shift_new_date"/>
-      </div>
-      <div class="alert alert-info small mb-0">Moving this task will reschedule it to the selected date. Its status will remain Pending.</div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      <button class="btn-primary" onclick="saveShift()"><i class="bi bi-arrow-repeat"></i>Update Schedule</button>
+      <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+      <button class="btn-primary" onclick="saveTask()">Save Task</button>
     </div>
   </div></div>
 </div>
@@ -1002,7 +811,7 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
-//  CHECKLIST — Core Logic
+//  CHECKLIST — Logic & Supabase Sync
 // ═══════════════════════════════════════════════════════════════
 
 const SUPABASE_URL  = "https://xvwfkpojafajoeskadhq.supabase.co";
@@ -1020,21 +829,19 @@ let sb = null;
 let SESSION = {};
 let DOERS_CACHE = [];
 let TASKS_CACHE = [];
-let currentSubmitTask = null;
-let _chartCompliance = null, _chartDept = null, _chartScore = null;
+let _chartCompliance = null, _chartDept = null;
 
 // ── BOOT ──────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
-  setStatus("Connecting to database…");
+  setStatus("Connecting to Supabase...");
   try {
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-    setStatus("Verifying connection…");
     await sb.from('doers').select('id').limit(1);
     setStatus("Ready!");
-    await sleep(350);
+    await sleep(250);
   } catch(e) {
-    setStatus("⚠ " + e.message);
-    await sleep(2000);
+    setStatus("Database connection failed: " + e.message);
+    await sleep(1500);
   }
   fadeOutLoader();
   document.getElementById('loginScreen').style.display = 'flex';
@@ -1046,11 +853,11 @@ function fadeOutLoader() {
   const el = document.getElementById('loadingScreen');
   if (el) {
     el.style.opacity = '0';
-    setTimeout(() => el.style.display = 'none', 500);
+    setTimeout(() => el.style.display = 'none', 400);
   }
 }
 
-// ── LOGIN ─────────────────────────────────────────────────────
+// ── AUTH & ROLES ──────────────────────────────────────────────
 let _activeRole = 'admin';
 
 function switchRole(role) {
@@ -1065,39 +872,30 @@ function switchRole(role) {
   document.getElementById('loginError').textContent = '';
 }
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') doLogin();
-});
-
 async function doLogin() {
   const u = document.getElementById('loginUser').value.trim();
   const p = document.getElementById('loginPass').value;
   const errEl = document.getElementById('loginError');
   errEl.textContent = '';
 
-  if (!u || !p) { errEl.textContent = 'Please enter username and password.'; return; }
+  if (!u || !p) { errEl.textContent = 'Please provide both username & password.'; return; }
 
   if (u === CFG.ADMIN_USER && p === CFG.ADMIN_PASS) {
     SESSION = { role: 'admin', name: 'Administrator', dept: '' };
     launchApp(); return;
   }
-
   if (u === CFG.SUPERADMIN_USER && p === CFG.SUPERADMIN_PASS) {
     SESSION = { role: 'super_admin', name: 'Super Administrator', dept: '' };
     launchApp(); return;
   }
-
-  if (p === CFG.USER_PASS) {
-    if (sb) {
-      const { data } = await sb.from('doers').select('*').ilike('name', u).limit(1);
-      if (data && data.length > 0) {
-        SESSION = { role: 'user', name: data[0].name, dept: data[0].department, id: data[0].id };
-        launchApp(); return;
-      }
+  if (p === CFG.USER_PASS && sb) {
+    const { data } = await sb.from('doers').select('*').ilike('name', u).limit(1);
+    if (data && data.length > 0) {
+      SESSION = { role: 'user', name: data[0].name, dept: data[0].department, id: data[0].id };
+      launchApp(); return;
     }
   }
-
-  errEl.textContent = 'Invalid credentials. Check your username and password.';
+  errEl.textContent = 'Invalid credentials. Please verify your details.';
 }
 
 function launchApp() {
@@ -1119,18 +917,15 @@ function launchApp() {
   document.getElementById('adminMenuGroup').style.display = isAdmin ? 'flex' : 'none';
   document.getElementById('userMenuGroup').style.display  = isAdmin ? 'none' : 'flex';
 
-  showPage(isAdmin ? 'dashboard' : 'myTasks');
+  showPage(isAdmin ? 'master' : 'myTasks');
 }
 
 function doLogout() {
   SESSION = {};
   document.getElementById('appShell').style.display = 'none';
-  document.getElementById('loginPass').value = '';
-  document.getElementById('loginError').textContent = '';
   document.getElementById('loginScreen').style.display = 'flex';
 }
 
-// ── PAGE ROUTING ──────────────────────────────────────────────
 function showPage(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-menu-item').forEach(s => s.classList.remove('active'));
@@ -1153,134 +948,277 @@ function showPage(page) {
 }
 
 function fmtDate(d) {
-  if (!d) return '';
+  if (!d) return '—';
   const dt = new Date(d);
   if (isNaN(dt)) return String(d);
-  const yyyy = dt.getFullYear();
-  const MM   = String(dt.getMonth() + 1).padStart(2, '0');
-  const dd   = String(dt.getDate()).padStart(2, '0');
-  return `${yyyy}/${MM}/${dd}`;
+  return `${dt.getFullYear()}/${String(dt.getMonth() + 1).padStart(2, '0')}/${String(dt.getDate()).padStart(2, '0')}`;
 }
 
-// ── DASHBOARD ─────────────────────────────────────────────────
-async function loadDashboard() {
+function fmtTimestamp(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  if (isNaN(dt)) return String(d);
+  return dt.toLocaleString();
+}
+
+// ── MASTER SCHEDULE (PENDING) ──────────────────────────────────
+async function loadMaster() {
   if (!sb) return;
-  const [{ count: dCount }, { data: master }, { data: done }] = await Promise.all([
-    sb.from('doers').select('*', { count: 'exact', head: true }),
-    sb.from('master_schedule').select('status, planned_date'),
-    sb.from('done_list').select('id'),
-  ]);
+  const { data } = await sb.from('master_schedule')
+    .select('*')
+    .is('status', null)
+    .order('planned_date', { ascending: true });
 
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  let pending = 0, overdue = 0;
-  (master || []).forEach(r => {
-    if (!r.status) {
-      const planDate = new Date(r.planned_date);
-      planDate.setHours(0, 0, 0, 0);
-      planDate < now ? overdue++ : pending++;
-    }
-  });
+  const rows = data || [];
+  const tbody = document.getElementById('masterTbody');
 
-  document.getElementById('st-doers').textContent   = dCount  || 0;
-  document.getElementById('st-done').textContent    = (done || []).length;
-  document.getElementById('st-pending').textContent = pending;
-  document.getElementById('st-overdue').textContent = overdue;
-
-  const { data: scoring } = await sb.from('scoring').select('*');
-  const sc = scoring || [];
-  const onT  = sc.filter(r => r.on_time).length;
-  const late = sc.filter(r => !r.on_time).length;
-
-  buildComplianceChart([onT, late]);
-
-  const deptMap = {};
-  sc.forEach(r => { const d = r.department || 'Unknown'; deptMap[d] = (deptMap[d] || 0) + 1; });
-  buildDeptChart(Object.keys(deptMap), Object.values(deptMap));
-
-  renderLeaderboard(buildLeaderboard(sc), 'dashLeaderboard');
-}
-
-function buildLeaderboard(scoring) {
-  const map = {};
-  (scoring || []).forEach(r => {
-    const n = r.doer_name || ''; if (!n) return;
-    if (!map[n]) map[n] = { name: n, dept: r.department || '', total: 0, onTime: 0, late: 0 };
-    map[n].total++;
-    r.on_time ? map[n].onTime++ : map[n].late++;
-  });
-  Object.values(map).forEach(p => {
-    p.score = p.total > 0 ? Math.round((p.onTime / p.total) * 100) - 100 : 0;
-  });
-  return Object.values(map).sort((a, b) => b.score - a.score);
-}
-
-function renderLeaderboard(data, containerId) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  if (!data.length) {
-    el.innerHTML = `<div class="empty-state"><i class="bi bi-trophy"></i><strong>No data yet</strong></div>`; return;
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="11" class="text-center text-muted p-4">No pending maintenance tasks found.</td></tr>`;
+    return;
   }
-  el.innerHTML = data.slice(0, 5).map((p, i) => {
-    const rankCls = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : '';
-    const scoreColor = p.score >= -30 ? 'var(--green)' : p.score >= -60 ? 'var(--amber)' : 'var(--red)';
-    return `<div class="lb-item">
-      <div class="lb-rank ${rankCls}">${i + 1}</div>
-      <div style="flex:1;min-width:0;">
-        <div class="lb-name">${p.name}</div>
-        <div class="lb-dept">${p.dept}</div>
-      </div>
-      <div class="lb-score">
-        <div class="lb-score-val" style="color:${scoreColor};">${p.score}</div>
-        <div class="lb-score-meta">score · <span style="color:var(--green);">✓${p.onTime}</span> <span style="color:var(--red);">✗${p.late}</span></div>
-      </div>
-    </div>`;
+
+  tbody.innerHTML = rows.map(r => {
+    // Parse how many times it was already rescheduled from remarks
+    let count = 0;
+    const match = (r.remarks || '').match(/Rescheduled \((\d)\/3\)/);
+    if (match) count = parseInt(match[1]);
+
+    const isMaxRescheduled = count >= 3;
+    const reschedBtn = isMaxRescheduled
+      ? `<button class="btn-resched-action" disabled title="Reached 3-time maximum"><i class="bi bi-slash-circle"></i> Max (3/3)</button>`
+      : `<button class="btn-resched-action" onclick="openReScheduleModal('${r.id}', ${count})"><i class="bi bi-calendar-event"></i> Re-Schedule ${count > 0 ? `(${count}/3)` : ''}</button>`;
+
+    const markDoneBtn = `<button class="btn-done-action" onclick="executeMarkDone('${r.id}')"><i class="bi bi-check-circle-fill"></i> Done</button>`;
+    const waBtn = `<button class="btn-whatsapp" onclick="sendWhatsAppNotify('${r.doer_name}','${r.task_name}','${r.planned_date}')"><i class="bi bi-whatsapp"></i></button>`;
+
+    return `<tr>
+      <td><strong>${r.doer_name || ''}</strong></td>
+      <td>${r.department || ''}</td>
+      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${r.task_ref_id || ''}</td>
+      <td><span class="badge badge-freq">${r.frequency || ''}</span></td>
+      <td>${r.task_name || ''}</td>
+      <td style="font-family:'Space Mono',monospace;font-weight:700;">${fmtDate(r.planned_date)}</td>
+      <td style="font-family:'Space Mono',monospace;">${fmtTimestamp(r.actual_date)}</td>
+      <td><span class="badge badge-pending">Pending</span></td>
+      <td>${markDoneBtn}</td>
+      <td>${reschedBtn}</td>
+      <td>${waBtn}</td>
+    </tr>`;
   }).join('');
 }
 
-function buildComplianceChart(vals) {
-  const ctx = document.getElementById('chartCompliance').getContext('2d');
-  if (_chartCompliance) _chartCompliance.destroy();
-  _chartCompliance = new Chart(ctx, {
-    type: 'doughnut',
-    data: { labels: ['On Time', 'Late'], datasets: [{ data: vals, backgroundColor: ['#1A56DB', '#DC2626'], borderWidth: 0 }] },
-    options: { plugins: { legend: { position: 'bottom' } }, cutout: '65%' }
-  });
-}
-function buildDeptChart(labels, data) {
-  const ctx = document.getElementById('chartDept').getContext('2d');
-  if (_chartDept) _chartDept.destroy();
-  _chartDept = new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets: [{ label: 'Tasks', data, backgroundColor: '#1A56DB', borderRadius: 5 }] },
-    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-  });
-}
+// ── EXACT DATABASE LOGIC: MARK DONE ───────────────────────────
+async function executeMarkDone(taskId) {
+  if (!confirm('Confirm marking this task as Done?')) return;
 
-// ── DOERS ─────────────────────────────────────────────────────
-let DOER_PK = 'name'; 
+  toast('Recording completion...', 'info');
 
-function detectDoerPK(row) {
-  if (!row) return 'name';
-  if (row.id   !== undefined) return 'id';
-  if (row.uuid !== undefined) return 'uuid';
-  for (const k of Object.keys(row)) {
-    if (k === 'name' || k === 'department' || k === 'email' || k === 'phone' || k === 'whatsapp' || k === 'user_type') continue;
-    return k;
+  // Fetch the row to compare dates accurately
+  const { data: task, error: fetchErr } = await sb.from('master_schedule').select('*').eq('id', taskId).single();
+  if (fetchErr || !task) {
+    toast('Error retrieving task: ' + (fetchErr ? fetchErr.message : 'Not found'), 'error');
+    return;
   }
-  return 'name';
+
+  // Exact Current Timestamp
+  const now = new Date();
+  const actualTimestampISO = now.toISOString();
+
+  // Date comparison: planned date vs actual timestamp
+  const planDate = new Date(task.planned_date);
+  
+  // Set planned date to the end of that planned day (23:59:59) so completing anytime on that date is considered on-time
+  const planEndOfDay = new Date(planDate);
+  planEndOfDay.setHours(23, 59, 59, 999);
+
+  // If actual time > planned time => "Done Late", otherwise "Done On Time"
+  const isDoneOnTime = now <= planEndOfDay;
+  const statusString = isDoneOnTime ? 'Done On Time' : 'Done Late';
+
+  try {
+    // 1. Update master_schedule
+    const { error: upErr } = await sb.from('master_schedule').update({
+      actual_date: actualTimestampISO,
+      status: statusString,
+      remarks: task.remarks ? task.remarks + ' | Confirmed via Master Schedule' : 'Confirmed via Master Schedule'
+    }).eq('id', taskId);
+    if (upErr) throw upErr;
+
+    // 2. Insert into done_list
+    await sb.from('done_list').insert({
+      doer_name: task.doer_name,
+      department: task.department,
+      task_name: task.task_name,
+      planned_date: task.planned_date,
+      actual_date: actualTimestampISO,
+      status: statusString,
+      submitted_by: SESSION.name || 'Admin',
+      remarks: task.remarks || ''
+    });
+
+    // 3. Insert into scoring
+    await sb.from('scoring').insert({
+      doer_name: task.doer_name,
+      department: task.department,
+      task_name: task.task_name,
+      on_time: isDoneOnTime,
+      score: isDoneOnTime ? 0 : -10,
+      planned_date: task.planned_date,
+      actual_date: actualTimestampISO
+    });
+
+    toast(`Task marked as ${statusString}!`, 'success');
+    loadMaster();
+  } catch (err) {
+    toast('Execution error: ' + err.message, 'error');
+  }
 }
 
+// ── EXACT DATABASE LOGIC: RE-SCHEDULE (3-TIME LIMIT) ─────────
+function openReScheduleModal(taskId, currentCount) {
+  document.getElementById('rs_task_id').value = taskId;
+  document.getElementById('rs_curr_resched_count').value = currentCount;
+  document.getElementById('rs_new_date').value = '';
+  new bootstrap.Modal(document.getElementById('reScheduleModal')).show();
+}
+
+async function confirmReSchedule() {
+  const taskId = document.getElementById('rs_task_id').value;
+  const newDateVal = document.getElementById('rs_new_date').value;
+  let count = parseInt(document.getElementById('rs_curr_resched_count').value) || 0;
+
+  if (!newDateVal) { toast('Please pick a valid new date', 'error'); return; }
+
+  if (count >= 3) {
+    toast('This task has already been re-scheduled 3 times.', 'error');
+    bootstrap.Modal.getInstance(document.getElementById('reScheduleModal')).hide();
+    return;
+  }
+
+  count++;
+  toast('Re-scheduling task...', 'info');
+
+  const formattedIsoDate = new Date(newDateVal + 'T00:00:00.000Z').toISOString();
+  const remarksTag = `Rescheduled (${count}/3) on ${new Date().toLocaleDateString()}`;
+
+  // Update planned_date in master_schedule & retain status as null (Pending)
+  const { error } = await sb.from('master_schedule').update({
+    planned_date: formattedIsoDate,
+    status: null, // Keep status as pending
+    remarks: remarksTag
+  }).eq('id', taskId);
+
+  bootstrap.Modal.getInstance(document.getElementById('reScheduleModal')).hide();
+
+  if (error) {
+    toast('Failed to reschedule: ' + error.message, 'error');
+  } else {
+    toast(`Scheduled updated to ${fmtDate(formattedIsoDate)} (Shift ${count}/3)`, 'success');
+    loadMaster();
+  }
+}
+
+// ── ARCHIVE & DONE LIST ────────────────────────────────────────
+async function loadArchive() {
+  if (!sb) return;
+  const { data } = await sb.from('master_schedule')
+    .select('*')
+    .not('status', 'is', null)
+    .order('actual_date', { ascending: false });
+
+  document.getElementById('archiveTbody').innerHTML = (data || []).map(r => {
+    const st = r.status || '';
+    const badge = st === 'Done On Time' ? `<span class="badge badge-ontime">${st}</span>` : `<span class="badge badge-late">${st}</span>`;
+    return `<tr>
+      <td><strong>${r.doer_name || ''}</strong></td>
+      <td>${r.department || ''}</td>
+      <td style="font-family:'Space Mono',monospace;">${r.task_ref_id || ''}</td>
+      <td><span class="badge badge-freq">${r.frequency || ''}</span></td>
+      <td>${r.task_name || ''}</td>
+      <td style="font-family:'Space Mono',monospace;">${fmtDate(r.planned_date)}</td>
+      <td style="font-family:'Space Mono',monospace;">${fmtTimestamp(r.actual_date)}</td>
+      <td>${badge}</td>
+      <td class="small text-muted">${r.remarks || '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function loadDoneList() {
+  if (!sb) return;
+  const { data } = await sb.from('done_list').select('*').order('actual_date', { ascending: false });
+  document.getElementById('doneTbody').innerHTML = (data || []).map(r => {
+    const st = r.status || '';
+    const badge = st === 'Done On Time' ? `<span class="badge badge-ontime">${st}</span>` : `<span class="badge badge-late">${st}</span>`;
+    return `<tr>
+      <td><strong>${r.doer_name || ''}</strong></td>
+      <td>${r.department || ''}</td>
+      <td>${r.task_name || ''}</td>
+      <td style="font-family:'Space Mono',monospace;">${fmtDate(r.planned_date)}</td>
+      <td style="font-family:'Space Mono',monospace;">${fmtTimestamp(r.actual_date)}</td>
+      <td>${badge}</td>
+      <td>${r.submitted_by || ''}</td>
+      <td style="font-family:'Space Mono',monospace;">${fmtDate(r.created_at || r.actual_date)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── SCORING ───────────────────────────────────────────────────
+async function loadScoring() {
+  if (!sb) return;
+  const { data } = await sb.from('scoring').select('*').order('actual_date', { ascending: false });
+  document.getElementById('scoreTbody').innerHTML = (data || []).map(r => `
+    <tr>
+      <td><strong>${r.doer_name || ''}</strong></td>
+      <td>${r.department || ''}</td>
+      <td>${r.task_name || ''}</td>
+      <td style="font-family:'Space Mono',monospace;">${fmtDate(r.planned_date)}</td>
+      <td style="font-family:'Space Mono',monospace;">${fmtTimestamp(r.actual_date)}</td>
+      <td>${r.on_time ? '<span class="badge badge-ontime">YES</span>' : '<span class="badge badge-late">NO</span>'}</td>
+      <td style="font-family:'Space Mono',monospace;font-weight:700;">${r.score}</td>
+      <td style="font-family:'Space Mono',monospace;">${fmtTimestamp(r.actual_date)}</td>
+    </tr>`).join('');
+}
+
+// ── USER: MY TASKS ─────────────────────────────────────────────
+async function loadMyTasks() {
+  if (!sb) return;
+  const el = document.getElementById('myTasksContainer');
+  const now = new Date();
+  const limit = new Date(now.getTime() + 10 * 86400000);
+
+  const { data } = await sb.from('master_schedule')
+    .select('*')
+    .ilike('doer_name', SESSION.name)
+    .is('status', null)
+    .lt('planned_date', limit.toISOString())
+    .order('planned_date', { ascending: true });
+
+  const tasks = data || [];
+  if (!tasks.length) {
+    el.innerHTML = `<div class="text-center py-5 text-muted"><i class="bi bi-emoji-smile fs-1"></i><div class="mt-2 fw-bold">All caught up! No pending tasks in the next 10 days.</div></div>`;
+    return;
+  }
+
+  el.innerHTML = tasks.map(t => `
+    <div class="card p-3 mb-3 border" style="border-left: 4px solid var(--pink) !important;">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <h6 class="fw-bold mb-1">${t.task_name}</h6>
+          <span class="text-muted small">${t.department} | Planned: ${fmtDate(t.planned_date)}</span>
+        </div>
+        <button class="btn-done-action" onclick="executeMarkDone('${t.id}')"><i class="bi bi-check-circle"></i> Complete</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── DOERS CRUD ─────────────────────────────────────────────────
 async function loadDoers() {
   if (!sb) return;
-  const { data } = await sb.from('doers').select('*').order('name', { ascending: true });
+  const { data } = await sb.from('doers').select('*').order('name');
   DOERS_CACHE = data || [];
-  if (DOERS_CACHE.length) DOER_PK = detectDoerPK(DOERS_CACHE[0]);
-  document.getElementById('doerTbody').innerHTML = DOERS_CACHE.map((r, i) => {
-    const pkVal = r[DOER_PK];
-    return `
+  document.getElementById('doerTbody').innerHTML = DOERS_CACHE.map((r, i) => `
     <tr>
-      <td style="color:var(--ink-muted);font-family:'Space Mono',monospace;font-size:.75rem;">${i+1}</td>
+      <td>${i + 1}</td>
       <td><strong>${r.name || ''}</strong></td>
       <td>${r.department || ''}</td>
       <td>${r.email || ''}</td>
@@ -1288,111 +1226,101 @@ async function loadDoers() {
       <td>${r.whatsapp || ''}</td>
       <td><span class="badge badge-role">${r.user_type || 'User'}</span></td>
       <td>
-        <button class="btn-icon" onclick="editDoer(${JSON.stringify(String(pkVal))})"><i class="bi bi-pencil"></i></button>
-        <button class="btn-icon danger ms-1" onclick="deleteDoer(${JSON.stringify(String(pkVal))})"><i class="bi bi-trash"></i></button>
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-function openDoerModal(pkVal) {
-  document.getElementById('doerEditId').value = pkVal || '';
-  if (pkVal) {
-    const r = DOERS_CACHE.find(d => String(d[DOER_PK]) === String(pkVal)) || {};
-    document.getElementById('d_name').value     = r.name || '';
-    document.getElementById('d_dept').value     = r.department || '';
-    document.getElementById('d_email').value    = r.email || '';
-    document.getElementById('d_phone').value    = r.phone || '';
-    document.getElementById('d_wa').value       = r.whatsapp || '';
-    document.getElementById('d_usertype').value = r.user_type || 'User';
-  } else {
-    ['d_name','d_dept','d_email','d_phone','d_wa'].forEach(i => document.getElementById(i).value = '');
-    document.getElementById('d_usertype').value = 'User';
-  }
-  new bootstrap.Modal(document.getElementById('doerModal')).show();
-}
-function editDoer(pkVal) { openDoerModal(pkVal); }
-
-async function saveDoer() {
-  const name = document.getElementById('d_name').value.trim();
-  if (!name) { toast('Name is required', 'error'); return; }
-  const row = {
-    name,
-    department: document.getElementById('d_dept').value.trim(),
-    email:      document.getElementById('d_email').value.trim(),
-    phone:      document.getElementById('d_phone').value.trim(),
-    whatsapp:   document.getElementById('d_wa').value.trim(),
-    user_type:  document.getElementById('d_usertype').value,
-  };
-  const pkVal = document.getElementById('doerEditId').value;
-  bootstrap.Modal.getInstance(document.getElementById('doerModal')).hide();
-  if (pkVal) {
-    const { error } = await sb.from('doers').update(row).eq(DOER_PK, pkVal);
-    error ? toast('Update failed: ' + error.message, 'error') : toast('Doer updated ✓', 'success');
-  } else {
-    const { error } = await sb.from('doers').insert(row);
-    error ? toast('Insert failed: ' + error.message, 'error') : toast('Doer added ✓', 'success');
-  }
-  loadDoers();
-}
-
-async function deleteDoer(pkVal) {
-  if (!confirm('Delete this doer?')) return;
-  const { error } = await sb.from('doers').delete().eq(DOER_PK, pkVal);
-  error ? toast('Delete failed: ' + error.message, 'error') : toast('Doer deleted', 'info');
-  loadDoers();
-}
-
-// ── TASKS ─────────────────────────────────────────────────────
-async function loadTasks() {
-  if (!sb) return;
-  const { data } = await sb.from('tasks').select('*').order('id', { ascending: true });
-  TASKS_CACHE = data || [];
-  document.getElementById('taskTbody').innerHTML = TASKS_CACHE.map(r => `
-    <tr>
-      <td><input type="checkbox" class="task-select" value="${r.id}"></td>
-      <td style="font-family:'Space Mono',monospace;font-size:.75rem;color:var(--ink-muted);">${r.id}</td>
-      <td><strong>${r.task_name || ''}</strong></td>
-      <td>${r.doer_name || ''}</td>
-      <td>${r.department || ''}</td>
-      <td><span class="badge badge-freq">${r.frequency || ''}</span></td>
-      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${fmtDate(r.start_date)}</td>
-      <td>
-        <button class="btn-icon" onclick="editTask(${r.id})"><i class="bi bi-pencil"></i></button>
-        <button class="btn-icon danger ms-1" onclick="deleteTask(${r.id})"><i class="bi bi-trash"></i></button>
+        <button class="btn-icon" onclick="openDoerModal(${r.id})"><i class="bi bi-pencil"></i></button>
+        <button class="btn-icon text-danger ms-1" onclick="deleteDoer(${r.id})"><i class="bi bi-trash"></i></button>
       </td>
     </tr>`).join('');
 }
 
-function toggleAllTasks(source) {
-  document.querySelectorAll('.task-select').forEach(cb => cb.checked = source.checked);
+function openDoerModal(id) {
+  document.getElementById('doerEditId').value = id || '';
+  if (id) {
+    const d = DOERS_CACHE.find(x => x.id === id) || {};
+    document.getElementById('d_name').value = d.name || '';
+    document.getElementById('d_dept').value = d.department || '';
+    document.getElementById('d_wa').value   = d.whatsapp || '';
+    document.getElementById('d_email').value= d.email || '';
+    document.getElementById('d_phone').value= d.phone || '';
+    document.getElementById('d_usertype').value = d.user_type || 'User';
+  } else {
+    ['d_name','d_dept','d_wa','d_email','d_phone'].forEach(k => document.getElementById(k).value = '');
+    document.getElementById('d_usertype').value = 'User';
+  }
+  new bootstrap.Modal(document.getElementById('doerModal')).show();
+}
+
+async function saveDoer() {
+  const name = document.getElementById('d_name').value.trim();
+  if (!name) { toast('Name is required', 'error'); return; }
+  const payload = {
+    name,
+    department: document.getElementById('d_dept').value.trim(),
+    whatsapp:   document.getElementById('d_wa').value.trim(),
+    email:      document.getElementById('d_email').value.trim(),
+    phone:      document.getElementById('d_phone').value.trim(),
+    user_type:  document.getElementById('d_usertype').value,
+  };
+  const id = document.getElementById('doerEditId').value;
+  bootstrap.Modal.getInstance(document.getElementById('doerModal')).hide();
+
+  if (id) await sb.from('doers').update(payload).eq('id', id);
+  else    await sb.from('doers').insert(payload);
+
+  toast('Personnel updated successfully', 'success');
+  loadDoers();
+}
+
+async function deleteDoer(id) {
+  if (!confirm('Delete this user?')) return;
+  await sb.from('doers').delete().eq('id', id);
+  toast('Doer removed', 'info');
+  loadDoers();
+}
+
+// ── TASKS CRUD & GENERATE ─────────────────────────────────────
+async function loadTasks() {
+  if (!sb) return;
+  const { data } = await sb.from('tasks').select('*').order('id');
+  TASKS_CACHE = data || [];
+  document.getElementById('taskTbody').innerHTML = TASKS_CACHE.map(r => `
+    <tr>
+      <td><input type="checkbox" class="task-select" value="${r.id}"></td>
+      <td style="font-family:'Space Mono',monospace;">${r.id}</td>
+      <td><strong>${r.task_name}</strong></td>
+      <td>${r.doer_name}</td>
+      <td>${r.department}</td>
+      <td><span class="badge badge-freq">${r.frequency}</span></td>
+      <td>${fmtDate(r.start_date)}</td>
+      <td>
+        <button class="btn-icon" onclick="openTaskModal(${r.id})"><i class="bi bi-pencil"></i></button>
+        <button class="btn-icon text-danger ms-1" onclick="deleteTask(${r.id})"><i class="bi bi-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+function toggleAllTasks(cb) {
+  document.querySelectorAll('.task-select').forEach(x => x.checked = cb.checked);
 }
 
 async function openTaskModal(id) {
-  await loadDoersForSelect();
+  const { data } = await sb.from('doers').select('name, department').order('name');
+  document.getElementById('t_doer').innerHTML = '<option value="">— Select —</option>' + 
+    (data || []).map(d => `<option value="${d.name}" data-dept="${d.department || ''}">${d.name}</option>`).join('');
+
   document.getElementById('taskEditId').value = id || '';
   if (id) {
-    const r = TASKS_CACHE.find(t => t.id === id) || {};
-    document.getElementById('t_name').value = r.task_name || '';
-    document.getElementById('t_doer').value = r.doer_name || '';
-    document.getElementById('t_dept').value = r.department || '';
-    document.getElementById('t_freq').value = r.frequency || '2W';
-    document.getElementById('t_date').value = r.start_date || '';
+    const t = TASKS_CACHE.find(x => x.id === id) || {};
+    document.getElementById('t_name').value = t.task_name || '';
+    document.getElementById('t_doer').value = t.doer_name || '';
+    document.getElementById('t_dept').value = t.department || '';
+    document.getElementById('t_freq').value = t.frequency || '2W';
+    document.getElementById('t_date').value = t.start_date || '';
   } else {
-    ['t_name','t_dept'].forEach(i => document.getElementById(i).value = '');
-    document.getElementById('t_freq').value = '2W';
+    document.getElementById('t_name').value = '';
+    document.getElementById('t_dept').value = '';
     document.getElementById('t_date').value = new Date().toISOString().split('T')[0];
   }
   new bootstrap.Modal(document.getElementById('taskModal')).show();
-}
-function editTask(id) { openTaskModal(id); }
-
-async function loadDoersForSelect() {
-  if (!sb) return;
-  const { data } = await sb.from('doers').select('name, department, whatsapp').order('name');
-  document.getElementById('t_doer').innerHTML =
-    '<option value="">— Select Doer —</option>' +
-    (data || []).map(d => `<option value="${d.name}" data-dept="${d.department || ''}" data-wa="${d.whatsapp || ''}">${d.name} (${d.department || ''})</option>`).join('');
 }
 
 function autoFillDept() {
@@ -1404,68 +1332,54 @@ async function saveTask() {
   const task_name = document.getElementById('t_name').value.trim();
   const doer_name = document.getElementById('t_doer').value;
   if (!task_name || !doer_name) { toast('Task name and doer are required', 'error'); return; }
-  
-  const row = {
-    task_name:  task_name,
-    doer_name:  doer_name,
+
+  const payload = {
+    task_name,
+    doer_name,
     department: document.getElementById('t_dept').value.trim(),
     frequency:  document.getElementById('t_freq').value,
     start_date: document.getElementById('t_date').value,
   };
-
   const id = document.getElementById('taskEditId').value;
   bootstrap.Modal.getInstance(document.getElementById('taskModal')).hide();
-  if (id) {
-    const { error } = await sb.from('tasks').update(row).eq('id', id);
-    error ? toast('Update failed: ' + error.message, 'error') : toast('Task updated', 'success');
-  } else {
-    const { error } = await sb.from('tasks').insert(row);
-    error ? toast('Insert failed: ' + error.message, 'error') : toast('Task added', 'success');
-  }
+
+  if (id) await sb.from('tasks').update(payload).eq('id', id);
+  else    await sb.from('tasks').insert(payload);
+
+  toast('Task saved', 'success');
   loadTasks();
 }
 
 async function deleteTask(id) {
-  if (!confirm('Delete this task?')) return;
+  if (!confirm('Delete task definition?')) return;
   await sb.from('tasks').delete().eq('id', id);
-  toast('Task deleted', 'info');
+  toast('Task removed', 'info');
   loadTasks();
 }
 
-// ── GENERATE MASTER ───────────────────────────────────────────
 async function generateMaster() {
-  const selectedCbs = document.querySelectorAll('.task-select:checked');
-  const selectedIds = Array.from(selectedCbs).map(cb => parseInt(cb.value));
+  const checked = Array.from(document.querySelectorAll('.task-select:checked')).map(c => parseInt(c.value));
+  if (!checked.length) { toast('Please check at least one task to generate schedule', 'error'); return; }
 
-  if (selectedIds.length === 0) {
-    toast('Please select at least one task to schedule', 'error');
-    return;
-  }
+  if (!confirm(`Generate schedule for ${checked.length} selected tasks? Existing uncompleted schedules for these will be renewed.`)) return;
 
-  if (!confirm(`Generate schedule for ${selectedIds.length} selected tasks? This will replace existing schedules for these specific tasks only.`)) return;
-  
-  toast('Generating schedule…', 'info');
-
-  const { data: tasks } = await sb.from('tasks').select('*').in('id', selectedIds);
-  if (!tasks || !tasks.length) { toast('No tasks found.', 'error'); return; }
-
-  const { error: delErr } = await sb.from('master_schedule').delete().in('task_ref_id', selectedIds);
-  if (delErr) { toast('Error clearing old schedule: ' + delErr.message, 'error'); return; }
+  toast('Scheduling...', 'info');
+  const { data: tasks } = await sb.from('tasks').select('*').in('id', checked);
+  await sb.from('master_schedule').delete().in('task_ref_id', checked).is('status', null);
 
   const FREQ_INTERVALS = { D:1, W:7, '2W':15, M:30, '2M':60, '3M':90, '6M':180, Y:365 };
   const rows = [];
   for (const t of tasks) {
     const start = new Date(t.start_date);
-    const freq  = (t.frequency || '2W').toUpperCase();
-    const interval = FREQ_INTERVALS[freq] || 30;
-    const end = new Date(start.getTime() + 730 * 86400000); // 2 Years
+    const interval = FREQ_INTERVALS[(t.frequency || '2W').toUpperCase()] || 30;
+    const end = new Date(start.getTime() + 730 * 86400000);
     let cur = new Date(start);
     while (cur <= end) {
       rows.push({
         doer_name:    t.doer_name,
         department:   t.department,
         task_ref_id:  t.id,
-        frequency:    freq,
+        frequency:    t.frequency,
         task_name:    t.task_name,
         planned_date: cur.toISOString(),
         status:       null
@@ -1475,433 +1389,115 @@ async function generateMaster() {
   }
 
   for (let i = 0; i < rows.length; i += 500) {
-    const { error } = await sb.from('master_schedule').insert(rows.slice(i, i + 500));
-    if (error) { toast('Error: ' + error.message, 'error'); return; }
+    await sb.from('master_schedule').insert(rows.slice(i, i + 500));
   }
-  toast(`✓ Generated ${rows.length} rows for selected tasks!`, 'success');
+  toast(`Generated ${rows.length} scheduled records!`, 'success');
   loadMaster();
 }
 
-// ── WHATSAPP NOTIFY ───────────────────────────────────────────
-async function sendWhatsAppNotify(doerName, taskName, plannedDate) {
+// ── DASHBOARD CHARTS ──────────────────────────────────────────
+async function loadDashboard() {
   if (!sb) return;
-  const { data } = await sb.from('doers').select('whatsapp').ilike('name', doerName).limit(1);
-  if (!data || !data.length || !data[0].whatsapp) {
-    toast('WhatsApp not available for ' + doerName, 'error');
-    return;
-  }
-  const wa = data[0].whatsapp.replace(/[^0-9]/g, '');
-  const msg = encodeURIComponent(`Hello ${doerName},\n\nReminder: You have a pending task.\n\nTask: ${taskName}\nPlanned Date: ${fmtDate(plannedDate)}\n\nPlease complete on time.\n\n- CheckList Maintenance System`);
-  const url = `https://wa.me/${wa}?text=${msg}`;
-  window.open(url, '_blank');
-  toast('WhatsApp opened', 'success');
-}
+  const [{ count: doerCount }, { data: master }, { data: done }] = await Promise.all([
+    sb.from('doers').select('*', { count: 'exact', head: true }),
+    sb.from('master_schedule').select('status, planned_date'),
+    sb.from('done_list').select('id')
+  ]);
 
-// ── MASTER DISPLAY (PENDING ONLY) ──────────────────────────────
-async function loadMaster() {
-  if (!sb) return;
-  const { data } = await sb.from('master_schedule')
-    .select('*')
-    .is('status', null)
-    .order('planned_date', { ascending: true });
+  const now = new Date();
+  let pending = 0, overdue = 0;
+  (master || []).forEach(m => {
+    if (!m.status) {
+      new Date(m.planned_date) < now ? overdue++ : pending++;
+    }
+  });
 
-  const rows = data || [];
-  if (!rows.length) {
-    document.getElementById('masterTbody').innerHTML = `<tr><td colspan="9" class="text-center text-muted p-4">No pending tasks found.</td></tr>`;
-    return;
-  }
+  document.getElementById('st-doers').textContent   = doerCount || 0;
+  document.getElementById('st-done').textContent    = (done || []).length;
+  document.getElementById('st-pending').textContent = pending;
+  document.getElementById('st-overdue').textContent = overdue;
 
-  document.getElementById('masterTbody').innerHTML = rows.map(r => {
-    const badge = `<span class="badge badge-pending">Pending</span>`;
-    const waBtn = `<button class="btn-whatsapp" onclick="sendWhatsAppNotify('${r.doer_name}','${r.task_name}','${r.planned_date}')"><i class="bi bi-whatsapp"></i></button>`;
-    
-    const actionButtons = `
-      <div class="d-flex gap-1">
-        <button class="btn-icon btn-sm" onclick="markDone('${r.id}')" title="Mark Done"><i class="bi bi-check-circle text-success"></i></button>
-        <button class="btn-icon btn-sm" onclick="openShiftModal('${r.id}')" title="Shift Date"><i class="bi bi-calendar-event text-primary"></i></button>
-      </div>
-    `;
+  const { data: scoreData } = await sb.from('scoring').select('on_time, department');
+  const sc = scoreData || [];
+  const onTimeCount = sc.filter(s => s.on_time).length;
+  const lateCount   = sc.filter(s => !s.on_time).length;
 
-    return `<tr>
-      <td>${r.doer_name || ''}</td><td>${r.department || ''}</td>
-      <td style="font-family:'Space Mono',monospace;font-size:.75rem;">${r.task_ref_id || ''}</td>
-      <td><span class="badge badge-freq">${r.frequency || ''}</span></td>
-      <td>${r.task_name || ''}</td>
-      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${fmtDate(r.planned_date)}</td>
-      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${r.actual_date ? fmtDate(r.actual_date) : '—'}</td>
-      <td>
-        <div class="d-flex align-items-center gap-2">
-            ${badge}
-            ${actionButtons}
-        </div>
-      </td>
-      <td>${waBtn}</td>
-    </tr>`;
-  }).join('');
-}
+  // Chart 1: Ratio
+  const ctx1 = document.getElementById('chartCompliance').getContext('2d');
+  if (_chartCompliance) _chartCompliance.destroy();
+  _chartCompliance = new Chart(ctx1, {
+    type: 'doughnut',
+    data: {
+      labels: ['On Time', 'Late'],
+      datasets: [{ data: [onTimeCount, lateCount], backgroundColor: ['#10B981', '#EC4899'] }]
+    },
+    options: { cutout: '65%' }
+  });
 
-// ── ARCHIVE (COMPLETED / ALL HISTORICAL RECORDS) ───────────────
-async function loadArchive() {
-  if (!sb) return;
-  const { data } = await sb.from('master_schedule')
-    .select('*')
-    .not('status', 'is', null)
-    .order('planned_date', { ascending: false });
-
-  const rows = data || [];
-  if (!rows.length) {
-    document.getElementById('archiveTbody').innerHTML = `<tr><td colspan="9" class="text-center text-muted p-4">No archived/completed records yet.</td></tr>`;
-    return;
-  }
-
-  document.getElementById('archiveTbody').innerHTML = rows.map(r => {
-    const st = (r.status || '').trim();
-    const badge = st === 'Done On Time' ? `<span class="badge badge-ontime">${st}</span>`
-                : st === 'Done Late'    ? `<span class="badge badge-late">${st}</span>`
-                : `<span class="badge badge-pending">${st || 'Completed'}</span>`;
-    return `<tr>
-      <td><strong>${r.doer_name || ''}</strong></td><td>${r.department || ''}</td>
-      <td style="font-family:'Space Mono',monospace;font-size:.75rem;">${r.task_ref_id || ''}</td>
-      <td><span class="badge badge-freq">${r.frequency || ''}</span></td>
-      <td>${r.task_name || ''}</td>
-      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${fmtDate(r.planned_date)}</td>
-      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${r.actual_date ? fmtDate(r.actual_date) : '—'}</td>
-      <td>${badge}</td>
-      <td style="font-size:.78rem;color:var(--ink-muted);">${r.remarks || '—'}</td>
-    </tr>`;
-  }).join('');
-}
-
-// ── DONE LIST ─────────────────────────────────────────────────
-async function loadDoneList() {
-  if (!sb) return;
-  const { data } = await sb.from('done_list').select('*').order('submitted_on', { ascending: false });
-  document.getElementById('doneTbody').innerHTML = (data || []).map(r => {
-    const st = (r.status || '').trim();
-    const badge = st === 'Done On Time' ? `<span class="badge badge-ontime">${st}</span>` : `<span class="badge badge-late">${st}</span>`;
-    return `<tr>
-      <td><strong>${r.doer_name || ''}</strong></td><td>${r.department || ''}</td>
-      <td>${r.task_name || ''}</td>
-      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${fmtDate(r.planned_date)}</td>
-      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${fmtDate(r.actual_date)}</td>
-      <td>${badge}</td>
-      <td>${r.submitted_by || ''}</td>
-      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${fmtDate(r.submitted_on)}</td>
-    </tr>`;
-  }).join('');
-}
-
-// ── SCORING ───────────────────────────────────────────────────
-async function loadScoring() {
-  if (!sb) return;
-  const { data: sc } = await sb.from('scoring').select('*').order('submitted_on', { ascending: false });
-  const scoring = sc || [];
-  const lb = buildLeaderboard(scoring);
-
-  renderPerfRankCards(lb);
-  renderLeaderboard(lb, 'scoringLeaderboard');
-
-  const ctx = document.getElementById('chartScore').getContext('2d');
-  if (_chartScore) _chartScore.destroy();
-  const top10 = lb.slice(0, 10);
-  _chartScore = new Chart(ctx, {
+  // Chart 2: Departments
+  const deptMap = {};
+  sc.forEach(s => { const d = s.department || 'General'; deptMap[d] = (deptMap[d] || 0) + 1; });
+  const ctx2 = document.getElementById('chartDept').getContext('2d');
+  if (_chartDept) _chartDept.destroy();
+  _chartDept = new Chart(ctx2, {
     type: 'bar',
     data: {
-      labels: top10.map(p => p.name),
-      datasets: [{ label: 'Score', data: top10.map(p => p.score),
-        backgroundColor: top10.map(p => p.score >= -10 ? '#059669' : p.score >= -30 ? '#1A56DB' : p.score >= -60 ? '#D97706' : '#DC2626'),
-        borderRadius: 5 }]
-    },
-    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false } } }
+      labels: Object.keys(deptMap),
+      datasets: [{ label: 'Tasks', data: Object.values(deptMap), backgroundColor: '#2563EB', borderRadius: 6 }]
+    }
   });
-
-  document.getElementById('scoreTbody').innerHTML = scoring.map(r => `
-    <tr>
-      <td>${r.doer_name || ''}</td><td>${r.department || ''}</td><td>${r.task_name || ''}</td>
-      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${fmtDate(r.planned_date)}</td>
-      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${fmtDate(r.actual_date)}</td>
-      <td>${r.on_time ? '<span class="badge badge-ontime">YES</span>' : '<span class="badge badge-late">NO</span>'}</td>
-      <td><span class="${r.on_time ? 'badge badge-ontime' : 'badge badge-late'}">${r.on_time ? 'On Time' : 'Late'}</span></td>
-      <td style="font-family:'Space Mono',monospace;font-size:.78rem;">${fmtDate(r.submitted_on)}</td>
-    </tr>`).join('');
 }
 
-function getRankMeta(score) {
-  if (score >= -10) return { cls: 'excellent', emoji: '🏆', label: 'Excellent',         color: 'var(--green)' };
-  if (score >= -30) return { cls: 'good',      emoji: '👍', label: 'Good',              color: 'var(--blue)'  };
-  if (score >= -60) return { cls: 'average',   emoji: '📈', label: 'Needs Improvement', color: 'var(--amber)' };
-  return                   { cls: 'improve',   emoji: '⚠️', label: 'Critical',          color: 'var(--red)'   };
-}
-
-function renderPerfRankCards(lb) {
-  const el = document.getElementById('perfRankCards');
-  if (!el) return;
-  if (!lb.length) { el.innerHTML = ''; return; }
-
-  const tiers = { excellent: [], good: [], average: [], improve: [] };
-  lb.forEach(p => { const r = getRankMeta(p.score); tiers[r.cls].push(p); });
-
-  const tierDefs = [
-    { key: 'excellent', emoji: '🏆', label: 'Excellent',         sub: 'Score ≥ −10',  cls: 'excellent' },
-    { key: 'good',      emoji: '👍', label: 'Good',              sub: 'Score −10 to −30', cls: 'good' },
-    { key: 'average',   emoji: '📈', label: 'Need Improvement',  sub: 'Score −30 to −60', cls: 'average' },
-    { key: 'improve',   emoji: '⚠️', label: 'Critical',          sub: 'Score < −60',  cls: 'improve' },
-  ];
-
-  el.innerHTML = `
-    <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--ink-muted);margin-bottom:10px;display:flex;align-items:center;gap:8px;">
-      <i class="bi bi-bar-chart-steps" style="color:var(--blue);font-size:.9rem;"></i> Performance Ratings
-    </div>
-    <div class="rank-grid">
-      ${tierDefs.map(t => {
-        const people = tiers[t.key];
-        const count  = people.length;
-        const topPerson = people[0];
-        const pct = lb.length > 0 ? Math.round((count / lb.length) * 100) : 0;
-        return `
-        <div class="rank-card ${t.cls}">
-          <div class="rank-emoji">${t.emoji}</div>
-          <div class="rank-label">${t.label}</div>
-          <div class="rank-score-num">${count} <span style="font-size:.75rem;font-weight:400;font-family:'DM Sans',sans-serif;">people</span></div>
-          <div class="rank-stats-sm">${pct}% of all doers</div>
-          <div style="width:100%;height:1px;background:var(--border);margin:4px 0;"></div>
-          <div class="rank-stats-sm" style="color:var(--ink-soft);">${t.sub}</div>
-          ${topPerson ? `<div class="rank-person" title="${topPerson.name}">Top: ${topPerson.name}</div>` : '<div class="rank-person">—</div>'}
-        </div>`;
-      }).join('')}
-    </div>`;
-}
-
-// ── MY TASKS ───────────────────────────────────────────
-async function loadMyTasks() {
-  if (!sb) return;
-  const el = document.getElementById('myTasksContainer');
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  const limit = new Date(now.getTime() + 10 * 86400000);
-
-  const { data } = await sb.from('master_schedule')
-    .select('*')
-    .ilike('doer_name', SESSION.name)
-    .is('status', null)
-    .lt('planned_date', limit.toISOString())
-    .order('planned_date', { ascending: true });
-
-  window._pendingTasks = data || [];
-
-  if (!window._pendingTasks.length) {
-    el.innerHTML = `<div class="empty-state"><i class="bi bi-emoji-smile"></i><strong>All caught up!</strong></div>`;
-    return;
+// ── UTILITIES ─────────────────────────────────────────────────
+async function sendWhatsAppNotify(doerName, taskName, plannedDate) {
+  const { data } = await sb.from('doers').select('whatsapp').ilike('name', doerName).limit(1);
+  if (!data || !data.length || !data[0].whatsapp) {
+    toast('No WhatsApp number registered for ' + doerName, 'error'); return;
   }
-
-  el.innerHTML = window._pendingTasks.map(t => {
-    const planned = new Date(t.planned_date);
-    planned.setHours(0, 0, 0, 0);
-    const isOverdue = planned < now;
-    return `<div class="task-card ${isOverdue ? 'overdue' : 'ok'}">
-      <div class="task-head">
-        <div>
-          <div class="task-name">${t.task_name}</div>
-          <div class="task-meta">
-            <span>${t.department}</span><span class="task-meta-sep">|</span>
-            <span>Planned: ${fmtDate(t.planned_date)}</span>
-          </div>
-        </div>
-        <div class="task-actions">
-           <button class="btn-success" onclick="openSubmitModal('${t.id}')"><i class="bi bi-check2-circle"></i>Complete</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+  const cleanNum = data[0].whatsapp.replace(/[^0-9]/g, '');
+  const text = encodeURIComponent(`Hello ${doerName},\nReminder: You have a scheduled task pending:\n- ${taskName}\nPlanned Date: ${fmtDate(plannedDate)}\nPlease complete and mark as done.\nCheckList Team`);
+  window.open(`https://wa.me/${cleanNum}?text=${text}`, '_blank');
 }
 
-// ── SUBMIT TASK ───────────────────────────────────────────────
-function openSubmitModal(taskId) {
-  const t = (window._pendingTasks || []).find(x => String(x.id) === String(taskId));
-  if (!t) return;
-  currentSubmitTask = t;
-
-  document.getElementById('submitModalBody').innerHTML = `
-    <div style="font-weight:700;margin-bottom:15px;">${t.task_name}</div>
-    <div class="mt-3">
-      <label class="form-label">Remarks</label>
-      <textarea class="form-control" id="chk_remarks" rows="2" placeholder="Enter completion details..."></textarea>
-    </div>`;
-  new bootstrap.Modal(document.getElementById('submitModal')).show();
-}
-
-async function confirmSubmit() {
-  if (!currentSubmitTask) return;
-  const t = currentSubmitTask;
-
-  const nowStr     = new Date().toISOString().split('T')[0];
-  const plannedStr = new Date(t.planned_date).toISOString().split('T')[0];
-
-  const onTime = nowStr <= plannedStr;
-  const status = onTime ? 'Done On Time' : 'Done Late';
-  const remarksVal = document.getElementById('chk_remarks').value.trim();
-
-  const actualDateTime = new Date();
-  const updateData = {
-    actual_date: actualDateTime.toISOString(),
-    status: status,
-    remarks: remarksVal
-  };
-
-  await sb.from('master_schedule').update(updateData).eq('id', t.id);
-  
-  await sb.from('done_list').insert({
-    doer_name: t.doer_name,
-    department: t.department,
-    task_name: t.task_name,
-    planned_date: t.planned_date,
-    actual_date: actualDateTime.toISOString(),
-    status: status,
-    submitted_by: SESSION.name,
-    remarks: remarksVal
-  });
-
-  await sb.from('scoring').insert({
-    doer_name: t.doer_name,
-    department: t.department,
-    task_name: t.task_name,
-    on_time: onTime,
-    score: onTime ? 0 : -10,
-    planned_date: t.planned_date,
-    actual_date: actualDateTime.toISOString()
-  });
-
-  bootstrap.Modal.getInstance(document.getElementById('submitModal')).hide();
-  toast('Task completed!', 'success');
-  loadMyTasks();
-}
-
-// ── MASTER SCHEDULE ACTIONS ───────────────────────────────────
-async function markDone(taskId) {
-  if (!confirm('Are you sure you want to mark this task as Done?')) return;
-  
-  const { data: task, error: fetchErr } = await sb.from('master_schedule').select('*').eq('id', taskId).single();
-  if (fetchErr || !task) { toast('Error fetching task details', 'error'); return; }
-
-  const now = new Date();
-  const nowStr = now.toISOString().split('T')[0];
-  const plannedStr = new Date(task.planned_date).toISOString().split('T')[0];
-  
-  const onTime = nowStr <= plannedStr;
-  const status = onTime ? 'Done On Time' : 'Done Late';
-  const remarksVal = "Completed via Master Schedule";
-
-  toast('Completing task...', 'info');
-
-  try {
-    const { error: upErr } = await sb.from('master_schedule').update({
-      actual_date: now.toISOString(),
-      status: status,
-      remarks: remarksVal
-    }).eq('id', taskId);
-    if (upErr) throw upErr;
-
-    const { error: doneErr } = await sb.from('done_list').insert({
-      doer_name: task.doer_name,
-      department: task.department,
-      task_name: task.task_name,
-      planned_date: task.planned_date,
-      actual_date: now.toISOString(),
-      status: status,
-      submitted_by: SESSION.name || 'Admin',
-      remarks: remarksVal
-    });
-    if (doneErr) throw doneErr;
-
-    const { error: scoreErr } = await sb.from('scoring').insert({
-      doer_name: task.doer_name,
-      department: task.department,
-      task_name: task.task_name,
-      on_time: onTime,
-      score: onTime ? 0 : -10,
-      planned_date: task.planned_date,
-      actual_date: now.toISOString()
-    });
-    if (scoreErr) throw scoreErr;
-
-    toast('Task marked as Done ✓', 'success');
-    loadMaster();
-  } catch (err) {
-    toast('Error: ' + err.message, 'error');
-  }
-}
-
-function openShiftModal(taskId) {
-  document.getElementById('shift_task_id').value = taskId;
-  document.getElementById('shift_new_date').value = '';
-  new bootstrap.Modal(document.getElementById('shiftModal')).show();
-}
-
-async function saveShift() {
-  const taskId = document.getElementById('shift_task_id').value;
-  const newDate = document.getElementById('shift_new_date').value;
-
-  if (!newDate) { toast('Please select a date', 'error'); return; }
-
-  toast('Rescheduling task...', 'info');
-
-  const { error } = await sb.from('master_schedule').update({
-    planned_date: new Date(newDate + 'T00:00:00').toISOString(),
-    status: null 
-  }).eq('id', taskId);
-
-  bootstrap.Modal.getInstance(document.getElementById('shiftModal')).hide();
-
-  if (error) {
-    toast('Update failed: ' + error.message, 'error');
-  } else {
-    toast('Task rescheduled to ' + fmtDate(newDate), 'success');
-    loadMaster();
-  }
-}
-
-// ── UTILS ─────────────────────────────────────────────────────
-async function exportCsv(table) {
-  const { data } = await sb.from(table).select('*');
-  if (!data || !data.length) return;
-  const keys = Object.keys(data[0]);
-  const csv = [keys.join(','), ...data.map(r => keys.map(k => `"${r[k] ?? ''}"`).join(','))].join('\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-  a.download = `${table}.csv`;
-  a.click();
-}
-
-async function exportFilteredCsv(type) {
-  let query = sb.from('master_schedule').select('*');
-  if (type === 'pending') {
-    query = query.is('status', null);
-  } else if (type === 'archive') {
-    query = query.not('status', 'is', null);
-  }
-  const { data } = await query;
-  if (!data || !data.length) { toast('No records to export', 'info'); return; }
-  const keys = Object.keys(data[0]);
-  const csv = [keys.join(','), ...data.map(r => keys.map(k => `"${r[k] ?? ''}"`).join(','))].join('\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-  a.download = `${type}_master_schedule.csv`;
-  a.click();
-}
-
-function filterTable(tableId, query) {
-  const q = query.toLowerCase();
-  document.querySelectorAll(`#${tableId} tbody tr`).forEach(tr => {
+function filterTable(tblId, val) {
+  const q = val.toLowerCase();
+  document.querySelectorAll(`#${tblId} tbody tr`).forEach(tr => {
     tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
   });
 }
 
+async function exportCsv(tbl) {
+  const { data } = await sb.from(tbl).select('*');
+  if (!data || !data.length) { toast('No records found', 'info'); return; }
+  downloadCsv(data, `${tbl}.csv`);
+}
+
+async function exportFilteredCsv(type) {
+  let query = sb.from('master_schedule').select('*');
+  if (type === 'pending') query = query.is('status', null);
+  else                    query = query.not('status', 'is', null);
+  const { data } = await query;
+  if (!data || !data.length) { toast('No records found', 'info'); return; }
+  downloadCsv(data, `${type}_schedule.csv`);
+}
+
+function downloadCsv(data, filename) {
+  const keys = Object.keys(data[0]);
+  const rows = [keys.join(','), ...data.map(r => keys.map(k => `"${r[k] ?? ''}"`).join(','))];
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([rows.join('\n')], { type: 'text/csv' }));
+  a.download = filename;
+  a.click();
+}
+
 function toast(msg, type = 'info') {
   const div = document.createElement('div');
-  div.className = `app-toast t-${type}`;
-  div.innerHTML = `<span>${msg}</span>`;
+  div.className = 'app-toast';
+  if (type === 'error')   div.style.borderLeftColor = 'var(--red)';
+  if (type === 'success') div.style.borderLeftColor = 'var(--green)';
+  div.textContent = msg;
   document.getElementById('toastWrap').appendChild(div);
-  setTimeout(() => div.remove(), 3000);
+  setTimeout(() => div.remove(), 3500);
 }
 </script>
 </body>
