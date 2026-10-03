@@ -1513,7 +1513,6 @@ async function loadMaster() {
     const badge = `<span class="badge badge-pending">Pending</span>`;
     const waBtn = `<button class="btn-whatsapp" onclick="sendWhatsAppNotify('${r.doer_name}','${r.task_name}','${r.planned_date}')"><i class="bi bi-whatsapp"></i></button>`;
     
-    // NEW: Added action buttons for Admin
     const actionButtons = `
       <div class="d-flex gap-1">
         <button class="btn-icon btn-sm" onclick="markDone('${r.id}')" title="Mark Done"><i class="bi bi-check-circle"></i></button>
@@ -1775,12 +1774,8 @@ async function confirmSubmit() {
   loadMyTasks();
 }
 
-// ── MASTER SCHEDULE ACTIONS (UPDATED) ──────────────────────────
+// ── MASTER SCHEDULE ACTIONS ───────────────────────────────────
 
-/**
- * NEW: Marks task as completed in master_schedule, done_list, and scoring.
- * This is the "Done" button in the Admin view.
- */
 async function markDone(taskId) {
   if (!confirm('Are you sure you want to mark this task as Done?')) return;
   
@@ -1798,7 +1793,6 @@ async function markDone(taskId) {
   toast('Completing task...', 'info');
 
   try {
-    // 1. Update master_schedule
     const { error: upErr } = await sb.from('master_schedule').update({
       actual_date: now.toISOString(),
       status: status,
@@ -1806,7 +1800,6 @@ async function markDone(taskId) {
     }).eq('id', taskId);
     if (upErr) throw upErr;
 
-    // 2. Insert into done_list
     const { error: doneErr } = await sb.from('done_list').insert({
       doer_name: task.doer_name,
       department: task.department,
@@ -1819,7 +1812,6 @@ async function markDone(taskId) {
     });
     if (doneErr) throw doneErr;
 
-    // 3. Insert into scoring
     const { error: scoreErr } = await sb.from('scoring').insert({
       doer_name: task.doer_name,
       department: task.department,
@@ -1838,17 +1830,11 @@ async function markDone(taskId) {
   }
 }
 
-/**
- * NEW: Opens the modal to select a new date for a pending task.
- */
 function openShiftModal(taskId) {
   document.getElementById('shift_task_id').value = taskId;
   new bootstrap.Modal(document.getElementById('shiftModal')).show();
 }
 
-/**
- * NEW: Updates the task with the new date and resets status to Pending.
- */
 async function saveShift() {
   const taskId = document.getElementById('shift_task_id').value;
   const newDate = document.getElementById('shift_new_date').value;
@@ -1859,7 +1845,7 @@ async function saveShift() {
 
   const { error } = await sb.from('master_schedule').update({
     planned_date: newDate,
-    status: null // Resets to Pending
+    status: null 
   }).eq('id', taskId);
 
   bootstrap.Modal.getInstance(document.getElementById('shiftModal')).hide();
